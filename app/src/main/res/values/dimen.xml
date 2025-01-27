@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="main_screen_padding">16dp</dimen>
+    <dimen name="main_screen_textSize">22sp</dimen>
+    <dimen name="radius_corner_Button">16dp</dimen>
+    <dimen name="height_line">56dp</dimen>
+
+</resources>
