@@ -14,7 +14,6 @@ import com.practicum.playlistmaker.R
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContentView(R.layout.activity_main)
         val buttonSearch = findViewById<Button>(R.id.buttonSearch)
         val buttonLibrary = findViewById<Button>(R.id.buttonLibrary)

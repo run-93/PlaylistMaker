@@ -5,25 +5,21 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/blue"
-        android:orientation="vertical"
-        android:padding="@dimen/main_screen_padding">
+        android:orientation="vertical">
 
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/app_name"
-            android:textColor="@color/white"
-            android:textSize="@dimen/main_screen_textSize"
-            android:layout_gravity="start"
-            android:layout_marginBottom="40dp"
-            android:layout_marginTop="10dp"/>
+    <com.google.android.material.appbar.MaterialToolbar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:title="@string/app_name"
+        app:titleTextAppearance="@style/mainScreen"
+        android:layout_gravity="start"
+        android:paddingBottom="40dp"/>
 
         <Button
             android:id="@+id/buttonSearch"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginBottom="@dimen/main_screen_padding"
             android:layout_weight="1"
             android:backgroundTint="@color/white"
             android:text="@string/search"
@@ -34,14 +30,15 @@
             app:icon="@drawable/search"
             app:iconGravity="textStart"
             app:iconPadding="1dp"
-            app:iconTint="@color/black" />
+            app:iconTint="@color/black"
+            android:layout_marginHorizontal="@dimen/main_screen_padding"
+            android:layout_marginBottom="@dimen/main_screen_padding"/>
 
 
         <Button
             android:id="@+id/buttonLibrary"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginBottom="@dimen/main_screen_padding"
             android:layout_weight="1"
             android:backgroundTint="@color/white"
             android:text="@string/library"
@@ -52,7 +49,9 @@
             app:icon="@drawable/library"
             app:iconGravity="textStart"
             app:iconPadding="1dp"
-            app:iconTint="@color/black" />
+            app:iconTint="@color/black"
+            android:layout_marginHorizontal="@dimen/main_screen_padding"
+            android:layout_marginBottom="@dimen/main_screen_padding"/>
 
         <Button
             android:id="@+id/buttonSettings"
@@ -69,6 +68,7 @@
             app:iconGravity="textStart"
             app:iconPadding="1dp"
             app:iconTint="@color/black"
+            android:layout_marginHorizontal="@dimen/main_screen_padding"
             android:layout_marginBottom="28dp" />
 
     </LinearLayout>

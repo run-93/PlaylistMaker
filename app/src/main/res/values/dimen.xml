@@ -2,7 +2,8 @@
 <resources>
     <dimen name="main_screen_padding">16dp</dimen>
     <dimen name="main_screen_textSize">22sp</dimen>
+    <dimen name="settings_screen_textSize">16sp</dimen>
     <dimen name="radius_corner_Button">16dp</dimen>
-    <dimen name="height_line">56dp</dimen>
+    <dimen name="height_line">20dp</dimen>
 
 </resources>

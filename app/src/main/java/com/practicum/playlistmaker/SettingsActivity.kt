@@ -8,17 +8,18 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.google.android.material.appbar.MaterialToolbar
 
 class SettingsActivity : AppCompatActivity() {
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContentView(R.layout.activity_settings)
-        val buttonBack = findViewById<ImageView>(R.id.buttonBack)
+        val buttonBack = findViewById<MaterialToolbar>(R.id.buttonBack)
 
-        buttonBack.setOnClickListener{
+        buttonBack.setNavigationOnClickListener{
             val backIntent = Intent(this, MainActivity::class.java)
+            finish()
             startActivity(backIntent)
         }
 
