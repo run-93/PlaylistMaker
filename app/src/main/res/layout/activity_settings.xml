@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/buttonBack"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:navigationIcon="@drawable/arrowback"
+        app:title="@string/settings"
+        app:titleTextAppearance="@style/toolbarSettings"/>
+
+    <com.google.android.material.switchmaterial.SwitchMaterial
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/dark_theme"
+        android:textSize="@dimen/settings_screen_textSize"
+        android:textColor="@color/black"
+        android:paddingVertical="@dimen/height_line"
+        android:paddingHorizontal="@dimen/main_screen_padding"
+        app:thumbTint="@color/switch_thumb_color"
+        app:trackTint="@color/switch_track_color"/>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawableEnd="@drawable/forward"
+        android:paddingHorizontal="@dimen/main_screen_padding"
+        android:paddingVertical="@dimen/height_line"
+        android:text="@string/forward_app"
+        android:textSize="@dimen/settings_screen_textSize"
+        android:textColor="@color/black"/>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawableEnd="@drawable/support"
+        android:paddingHorizontal="@dimen/main_screen_padding"
+        android:paddingVertical="@dimen/height_line"
+        android:text="@string/write_support"
+        android:textSize="@dimen/settings_screen_textSize"
+        android:textColor="@color/black"/>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawableEnd="@drawable/vector"
+        android:paddingHorizontal="@dimen/main_screen_padding"
+        android:paddingVertical="@dimen/height_line"
+        android:text="@string/user_agreement"
+        android:textSize="@dimen/settings_screen_textSize"
+        android:textColor="@color/black"/>
+
+</LinearLayout>
