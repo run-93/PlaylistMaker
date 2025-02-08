@@ -7,4 +7,12 @@
     <string name="forward_app">Поделиться приложением</string>
     <string name="write_support">Написать в поддержку</string>
     <string name="user_agreement">Пользовательское соглашение</string>
+    <string name="course_android_developer">
+        "Посмотрите этот курс: https://practicum.yandex.ru/android-developer/?from=catalog"
+    </string>
+    <string name="email_support" translatable="false">vasilievleonid199@gmail.com</string>
+    <string name="message_theme">Сообщение разработчикам и разработчицам приложения Playlist Maker</string>
+    <string name="message_support">Спасибо разработчикам и разработчицам за крутое приложение!</string>
+    <string name="url_user_agreement" translatable="false">https://yandex.ru/legal/practicum_offer/</string>
+
 </resources>
