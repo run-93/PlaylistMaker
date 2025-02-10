@@ -23,7 +23,7 @@
             style="@style/editTextSearchStyle"
             android:textCursorDrawable="@drawable/cursor"/>
 
-        <ImageView
+        <ImageButton
             android:id="@+id/clearIcon"
             style="@style/deliteSearchString"/>
     </FrameLayout>

@@ -24,7 +24,7 @@ class MainActivity : AppCompatActivity() {
         buttonSearch.setOnClickListener{
             val searchIntent = Intent(this, SearchActivity::class.java)
             startActivity(searchIntent)
-            finish()
+
 
        }
         buttonLibrary.setOnClickListener {
@@ -36,8 +36,9 @@ class MainActivity : AppCompatActivity() {
         buttonSettings.setOnClickListener {
             val settingIntent = Intent(this, SettingsActivity::class.java)
             startActivity(settingIntent)
-            finish()
+
         }
 
     }
+
 }

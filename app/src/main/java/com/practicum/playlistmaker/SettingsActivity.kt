@@ -27,6 +27,7 @@ class SettingsActivity : AppCompatActivity() {
 
         buttonBack.setNavigationOnClickListener{
             val backIntent = Intent(this, MainActivity::class.java)
+            backIntent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
             startActivity(backIntent)
             finish()
         }

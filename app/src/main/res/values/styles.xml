@@ -99,7 +99,8 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_gravity">end|center_vertical</item>
-        <item name="android:paddingHorizontal">26dp</item>
+        <item name="android:layout_marginHorizontal">18dp</item>
+        <item name="backgroundTint">@color/windows_search</item>
         <item name="android:src">@drawable/delite_search</item>
         <item name="android:visibility">gone</item>
 

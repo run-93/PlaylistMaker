@@ -18,6 +18,11 @@ import com.google.android.material.appbar.MaterialToolbar
 class SearchActivity : AppCompatActivity() {
     private var textSearch: String = "EDIT_TEXT_DEF"
 
+    companion object{
+        const val EDIT_TEXT_KEY = "EDIT_TEXT_KEY"
+        const val EDIT_TEXT_DEF = ""
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
@@ -30,6 +35,7 @@ class SearchActivity : AppCompatActivity() {
         // переход из активити поиска на главную актививти
         buttonBackSearch.setNavigationOnClickListener{
             val backSearchIntent = Intent(this, MainActivity::class.java)
+            backSearchIntent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
             startActivity(backSearchIntent)
             finish()
         }
@@ -85,17 +91,11 @@ class SearchActivity : AppCompatActivity() {
         super.onSaveInstanceState(outState)
         outState.putString(EDIT_TEXT_KEY, textSearch)
     }
-    companion object{
-        const val EDIT_TEXT_KEY = "EDIT_TEXT_KEY"
-        const val EDIT_TEXT_DEF = ""
-    }
+
 
     // Метод получения текста поисковой строки из оперативную памяти и установка его в EditText
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
         textSearch = savedInstanceState.getString(EDIT_TEXT_KEY, EDIT_TEXT_DEF)
-
     }
-
-
 }
