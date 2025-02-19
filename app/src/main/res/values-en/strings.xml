@@ -7,4 +7,9 @@
     <string name="forward_app">Share the app</string>
     <string name="write_support">Write to support</string>
     <string name="user_agreement">User agreement</string>
+    <string name="course_android_developer">
+        "Check out this course: https://practicum.yandex.ru/android-developer/?from=catalog"
+    </string>
+    <string name="message_theme">Message to the developers and developers of the Playlist Maker app</string>
+    <string name="message_support">Thanks to the developers and developers for the cool app!</string>
 </resources>

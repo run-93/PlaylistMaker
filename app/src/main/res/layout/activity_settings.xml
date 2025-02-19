@@ -3,56 +3,36 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="?attr/colorSecondary"
     android:orientation="vertical">
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/buttonBack"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         app:navigationIcon="@drawable/arrowback"
         app:title="@string/settings"
-        app:titleTextAppearance="@style/toolbarSettings"/>
+        app:titleTextAppearance="@style/toolbarSettings"
+        style="@style/toolbarSettings"/>
 
     <com.google.android.material.switchmaterial.SwitchMaterial
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         android:text="@string/dark_theme"
-        android:textSize="@dimen/settings_screen_textSize"
-        android:textColor="@color/black"
-        android:paddingVertical="@dimen/height_line"
-        android:paddingHorizontal="@dimen/main_screen_padding"
-        app:thumbTint="@color/switch_thumb_color"
-        app:trackTint="@color/switch_track_color"/>
+        style="@style/menuSetingsStyle"/>
 
     <com.google.android.material.textview.MaterialTextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:id="@+id/toShare"
+        style="@style/menuSetingsStyle"
         android:drawableEnd="@drawable/forward"
-        android:paddingHorizontal="@dimen/main_screen_padding"
-        android:paddingVertical="@dimen/height_line"
-        android:text="@string/forward_app"
-        android:textSize="@dimen/settings_screen_textSize"
-        android:textColor="@color/black"/>
+        android:text="@string/forward_app" />
 
     <com.google.android.material.textview.MaterialTextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:id="@+id/writeSupport"
+        style="@style/menuSetingsStyle"
         android:drawableEnd="@drawable/support"
-        android:paddingHorizontal="@dimen/main_screen_padding"
-        android:paddingVertical="@dimen/height_line"
-        android:text="@string/write_support"
-        android:textSize="@dimen/settings_screen_textSize"
-        android:textColor="@color/black"/>
+        android:text="@string/write_support" />
 
     <com.google.android.material.textview.MaterialTextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:id="@+id/user_agreement"
         android:drawableEnd="@drawable/vector"
-        android:paddingHorizontal="@dimen/main_screen_padding"
-        android:paddingVertical="@dimen/height_line"
         android:text="@string/user_agreement"
-        android:textSize="@dimen/settings_screen_textSize"
-        android:textColor="@color/black"/>
+        style="@style/menuSetingsStyle"/>
 
 </LinearLayout>
