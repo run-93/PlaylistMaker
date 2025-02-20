@@ -6,7 +6,7 @@
 
 
     <ImageView
-        android:id="@+id/imageCover"
+        android:id="@+id/image_Cover"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1.5"
@@ -29,7 +29,7 @@
 
 
         <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/trackName"
+            android:id="@+id/track_Name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Smells Like Teen Spirit"
@@ -45,7 +45,7 @@
             android:orientation="horizontal">
 
             <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/artistName"
+                android:id="@+id/artist_Name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Nirvana"
@@ -57,7 +57,7 @@
                 android:drawableEnd="@drawable/ellipse_1"/>
 
             <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/trackTime"
+                android:id="@+id/track_Time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="5dp"
@@ -71,7 +71,7 @@
     </LinearLayout>
 
     <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/vectorIcon"
+        android:id="@+id/vector_Icon"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
