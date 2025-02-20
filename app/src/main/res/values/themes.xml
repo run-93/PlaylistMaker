@@ -9,6 +9,7 @@
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/blue</item>
         <item name="colorOnPrimary">@color/white</item>
+        <item name="colorPrimaryVariant">@color/text_color_hint</item>
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/white</item>
         <item name="colorSecondaryVariant">@color/text_button</item>
