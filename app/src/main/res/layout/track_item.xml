@@ -1,8 +1,6 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal">
+    style="@style/trackItem">
 
 
     <ImageView
@@ -10,14 +8,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1.5"
-        android:scaleType="fitCenter"
-        android:adjustViewBounds="true"
-        android:src="@drawable/cover"
-        android:layout_marginStart="13dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        />
+        style="@style/trackItem.ImageView"/>
 
 
     <LinearLayout
@@ -32,11 +23,10 @@
             android:id="@+id/track_Name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Smells Like Teen Spirit"
+            android:text="Композиция"
             android:textColor="?attr/colorOnSecondary"
             android:textSize="16sp"
-            android:fontFamily="@font/ys_display_regular"
-            android:textFontWeight="400"/>
+            style="@style/trackItem.TextView"/>
 
 
         <LinearLayout
@@ -48,24 +38,22 @@
                 android:id="@+id/artist_Name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Nirvana"
+                android:text="Исполнитель"
                 android:textColor="?attr/colorPrimaryVariant"
                 android:textSize="11sp"
-                android:fontFamily="@font/ys_display_regular"
-                android:textFontWeight="400"
                 android:drawablePadding="5dp"
-                android:drawableEnd="@drawable/ellipse_1"/>
+                android:drawableEnd="@drawable/ellipse_1"
+                style="@style/trackItem.TextView"/>
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/track_Time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="5dp"
-                android:text="5:01"
+                android:text="00:00"
                 android:textColor="?attr/colorPrimaryVariant"
                 android:textSize="11sp"
-                android:fontFamily="@font/ys_display_regular"
-                android:textFontWeight="400" />
+                style="@style/trackItem.TextView"/>
         </LinearLayout>
 
     </LinearLayout>
@@ -77,6 +65,7 @@
         android:layout_weight="1"
         android:layout_gravity="center_vertical"
         android:drawableEnd="@drawable/vector"
-        android:layout_marginEnd="20dp"/>
+        android:layout_marginEnd="20dp"
+        style="@style/trackItem.TextView"/>
 
 </LinearLayout>
