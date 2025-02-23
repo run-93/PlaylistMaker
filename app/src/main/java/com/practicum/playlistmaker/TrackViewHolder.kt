@@ -33,7 +33,7 @@ class TrackViewHolder (itemView: View): RecyclerView.ViewHolder(itemView) {
         Glide.with(itemView.context)
             .load(item.artworkUrl100)
             .apply(requestOption)
-            .apply(RequestOptions().transform(RoundedCorners(10)))
+            .apply(RequestOptions().transform(RoundedCorners(2)))
             .into(vhImageCover)
 
     }

@@ -120,6 +120,8 @@
     </style>
 
     <style name="trackItem.ImageView">
+        <item name="android:layout_width">45dp</item>
+        <item name="android:layout_height">45dp</item>
         <item name="android:scaleType">fitCenter</item>
         <item name="android:adjustViewBounds">true</item>
         <item name="android:layout_marginStart">13dp</item>
@@ -129,6 +131,8 @@
     </style>
 
     <style name="trackItem.TextView">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
         <item name="android:fontFamily">@font/ys_display_regular</item>
         <item name="android:textFontWeight">400</item>
         <item name="android:maxLines">1</item>

@@ -5,9 +5,6 @@
 
     <ImageView
         android:id="@+id/image_Cover"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1.5"
         style="@style/trackItem.ImageView"/>
 
 
@@ -21,8 +18,6 @@
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/track_Name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
             android:text="Композиция"
             android:textColor="?attr/colorOnSecondary"
             android:textSize="16sp"
@@ -30,14 +25,12 @@
 
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/artist_Name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
                 android:text="Исполнитель"
                 android:textColor="?attr/colorPrimaryVariant"
                 android:textSize="11sp"
@@ -47,8 +40,6 @@
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/track_Time"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
                 android:layout_marginHorizontal="5dp"
                 android:text="00:00"
                 android:textColor="?attr/colorPrimaryVariant"
@@ -60,9 +51,6 @@
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/vector_Icon"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
         android:layout_gravity="center_vertical"
         android:drawableEnd="@drawable/vector"
         android:layout_marginEnd="20dp"
