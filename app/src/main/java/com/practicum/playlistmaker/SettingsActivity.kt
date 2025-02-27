@@ -78,5 +78,4 @@ class SettingsActivity : AppCompatActivity() {
         urlIntent.data = Uri.parse(url)
         startActivity(urlIntent)
     }
-
 }
