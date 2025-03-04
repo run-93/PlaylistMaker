@@ -12,4 +12,6 @@
     </string>
     <string name="message_theme">Message to the developers and developers of the Playlist Maker app</string>
     <string name="message_support">Thanks to the developers and developers for the cool app!</string>
+    <string name="nothing_found">Nothing was found</string>
+    <string name="something_went_wrong">Connection problems     The download failed. Check your internet connection</string>
 </resources>

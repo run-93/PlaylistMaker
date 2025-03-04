@@ -8,6 +8,9 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.bumptech.glide.request.RequestOptions
 import com.google.android.material.textview.MaterialTextView
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class TrackViewHolder (itemView: View): RecyclerView.ViewHolder(itemView) {
     /// определяем переменные и привязываем их к view
@@ -21,7 +24,8 @@ class TrackViewHolder (itemView: View): RecyclerView.ViewHolder(itemView) {
         // связываем переменные с значениями из полей view
         vhTrackName.text = item.trackName
         vhArtistName.text = item.artistName
-        vhTrackTime.text = item.trackTime
+        vhTrackTime.text = SimpleDateFormat("mm:ss", Locale.getDefault()).format(Date(item.trackTimeMillis))
+
 
         val requestOption = RequestOptions()
             .placeholder(R.drawable.placeholder)
