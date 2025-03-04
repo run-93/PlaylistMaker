@@ -9,6 +9,7 @@ import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
+import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
@@ -25,6 +26,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.http.Query
 
 class SearchActivity : AppCompatActivity() {
     private var textSearch: String = "EDIT_TEXT_DEF"
@@ -51,6 +53,8 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var trackListSearch: RecyclerView
     private lateinit var placeholderMessage: TextView
     private lateinit var placeholderImage: ImageView
+    private lateinit var updateButton: Button
+
 
 
     private val track = ArrayList<Track>()
@@ -68,6 +72,7 @@ class SearchActivity : AppCompatActivity() {
         trackListSearch = findViewById<RecyclerView>(R.id.trackListSearch)
         placeholderMessage = findViewById<TextView>(R.id.placeholderMessage)
         placeholderImage = findViewById<ImageView>(R.id.placeholderImage)
+        updateButton = findViewById<Button>(R.id.updateButton)
 
         // переход из активити поиска на главную актививти
         buttonBackSearch.setNavigationOnClickListener{
@@ -81,6 +86,14 @@ class SearchActivity : AppCompatActivity() {
         clearButton.setOnClickListener {
             inputEditText.setText("")
             hideKeyboard()
+            track.clear()
+        }
+
+        // после нажатия на кнопку "Обновить" запрос к серверу повторяется полностью
+        updateButton.setOnClickListener {
+            if (inputEditText.text.isNotEmpty()) {
+                searchApi(inputEditText.text.toString())
+            }
         }
 
         val simpleTextWatcher = object : TextWatcher {
@@ -103,62 +116,71 @@ class SearchActivity : AppCompatActivity() {
         adapter.track = track
         trackListSearch.adapter = adapter
 
-        // осуществление поискового запроса не через кнопку на View, а через кнопку Done, которая появляется на клавиатуре
 
+        // осуществление поискового запроса не через кнопку на View, а через кнопку Done, которая появляется на клавиатуре
         inputEditText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 if (inputEditText.text.isNotEmpty()) {
-                    iTunesService.search(inputEditText.text.toString()).enqueue(object :
-                        Callback<TrackResponse> {
-                        override fun onResponse(call: Call<TrackResponse>,
-                                                response: Response<TrackResponse>
-                        ) {
-                            if (response.code() == 200) {
-                                track.clear()
-                                if (response.body()?.results?.isNotEmpty() == true) {
-                                    track.addAll(response.body()?.results!!)
-                                    adapter.notifyDataSetChanged()
-                                }
-                                if (track.isEmpty()) {
-                                    showMessage(ErrorType.EMPTY_RESULT)
-                                } else {
-
-                                }
-                            } else {
-                                showMessage(ErrorType.NETWORK_ERROR)
-                            }
-                        }
-
-                        override fun onFailure(call: Call<TrackResponse>, t: Throwable) {
-                            showMessage(ErrorType.NETWORK_ERROR)
-                        }
-
-                    })
+                    searchApi(inputEditText.text.toString())
                 }
                 true
+            } else {
+                false
             }
-            false
         }
 
     }
 
-    //сообщение выводимое при отсутствии интернета и пустом списке после поиска песни
+private fun searchApi(query: String) {
+    iTunesService.search(query).enqueue(object : Callback<TrackResponse> {
+        override fun onResponse(call: Call<TrackResponse>, response: Response<TrackResponse>) {
+            if (response.code() == 200) {
+                track.clear()
+
+                if (response.body()?.results?.isNotEmpty() == true) {
+                    track.addAll(response.body()?.results!!)
+                    adapter.notifyDataSetChanged()
+                    placeholderImage.visibility = View.GONE
+                    placeholderMessage.visibility = View.GONE
+                    updateButton.visibility = View.GONE
+                }
+                if (track.isEmpty()) {
+                    showMessage(ErrorType.EMPTY_RESULT)
+                }
+            } else {
+                showMessage(ErrorType.NETWORK_ERROR)
+            }
+        }
+
+        override fun onFailure(call: Call<TrackResponse>, t: Throwable) {
+            showMessage(ErrorType.NETWORK_ERROR)
+        }
+    })
+}
+
+//сообщение выводимое при отсутствии интернета и пустом списке после поиска песни
 
     private fun showMessage(errorType: ErrorType, additionalMessage: String = "") {
-        val (text, imageRes) = when (errorType) {
-            ErrorType.NETWORK_ERROR -> Pair(R.string.something_went_wrong,
-                R.drawable.placeholdererrorinternet
+        val (textID, imageRes, isButtonVisible) = when (errorType) {
+            ErrorType.NETWORK_ERROR -> Triple(R.string.something_went_wrong,
+                R.drawable.placeholdererrorinternet,
+                true
             )
 
-            ErrorType.EMPTY_RESULT -> Pair(R.string.nothing_found,
-                R.drawable.placeholderempty
+            ErrorType.EMPTY_RESULT -> Triple(R.string.nothing_found,
+                R.drawable.placeholderempty,
+                false
             )
         }
 
         // Установка текста и изображения
         placeholderImage.setImageResource(imageRes)
+        placeholderImage.visibility = View.VISIBLE
+        placeholderMessage.text = getString(textID)
         placeholderMessage.visibility = View.VISIBLE
-        placeholderMessage.text = text.toString()
+
+        // Установка видимости кнопки
+        updateButton.visibility = if (isButtonVisible) View.VISIBLE else View.GONE
 
         // Очистка списка и уведомление адаптера
         track.clear()

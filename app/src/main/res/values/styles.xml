@@ -139,4 +139,42 @@
         <item name="android:ellipsize">end</item>
     </style>
 
+    <style name="placeholderErrorImage">
+    <item name="android:layout_width">120dp</item>
+    <item name="android:layout_height">120dp</item>
+    <item name="android:layout_gravity">center</item>
+    <item name="android:layout_marginTop">102dp</item>
+    </style>
+
+    <style name="placeholderErrorText">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:gravity">center</item>
+        <item name="android:fontFamily">@font/ys_display_medium</item>
+        <item name="android:paddingTop">@dimen/main_screen_padding</item>
+        <item name="android:paddingLeft">24dp</item>
+        <item name="android:paddingRight">24dp</item>
+        <item name="android:textColor">?attr/colorSecondaryVariant</item>
+        <item name="android:textFontWeight">400</item>
+        <item name="android:textSize">19sp</item>
+    </style>
+
+    <style name="buttonUpdate">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:layout_marginTop">24dp</item>
+        <item name="android:backgroundTint">?attr/colorSecondaryVariant</item>
+        <item name="android:fontFamily">@font/ys_display_medium</item>
+        <item name="android:letterSpacing">0</item>
+        <item name="android:text">@string/update</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textColor">?attr/colorSecondary</item>
+        <item name="android:textFontWeight">500</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:visibility">gone</item>
+        <item name="cornerRadius">54dp</item>
+    </style>
+
 </resources>
