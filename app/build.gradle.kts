@@ -48,4 +48,7 @@ dependencies {
     implementation ("com.google.android.material:material:1.6.1") // подключаем библиотеку material
     implementation ("com.github.bumptech.glide:glide:4.16.0") // подключаем библиотеку Glide
     annotationProcessor ("com.github.bumptech.glide:compiler:4.16.0") //подключаем  дополнительный модуль основной библиотеки Glide для корректной компиляции
+    implementation ("com.google.code.gson:gson:2.10") //подключаем библиотеку gson
+    implementation ("com.squareup.retrofit2:retrofit:2.9.0")// для создание запросов к серверу с использованием API подключаем retrofit
+    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")//подключаем конвертер для преобразование ответов json в классы KOTLIN и обратно
 }
