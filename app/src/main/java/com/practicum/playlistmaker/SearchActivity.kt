@@ -18,9 +18,11 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.MaterialToolbar
 import com.bumptech.glide.Glide
+import com.google.android.material.button.MaterialButton
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -54,11 +56,14 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var placeholderMessage: TextView
     private lateinit var placeholderImage: ImageView
     private lateinit var updateButton: Button
-
-
+    private lateinit var trackListSearchHistory: RecyclerView
+    private lateinit var clearHistory: MaterialButton
 
     private val track = ArrayList<Track>()
     private val adapter = TrackAdapter()
+
+// создаем переменную в которой будет храниться история поиска
+    private lateinit var searchHistory: SearchHistory
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -73,6 +78,8 @@ class SearchActivity : AppCompatActivity() {
         placeholderMessage = findViewById<TextView>(R.id.placeholderMessage)
         placeholderImage = findViewById<ImageView>(R.id.placeholderImage)
         updateButton = findViewById<Button>(R.id.updateButton)
+        trackListSearchHistory = findViewById<RecyclerView>(R.id.trackListSearchHistory)
+        clearHistory = findViewById<MaterialButton>(R.id.clearHistory)
 
         // переход из активити поиска на главную актививти
         buttonBackSearch.setNavigationOnClickListener{
@@ -127,6 +134,29 @@ class SearchActivity : AppCompatActivity() {
             } else {
                 false
             }
+        }
+
+        // Инициализация SharedPreferences и SearchHistory
+        val searchPref = getSharedPreferences("SEARCH_HISTORY", MODE_PRIVATE)
+        searchHistory = SearchHistory(searchPref)
+
+
+
+        // Инициализация RecyclerView и адаптера для истории поиска
+
+        val adapterHistory = TrackAdapterHistory(track) { track ->
+            searchHistory.addTrack(track) // Добавляем трек в историю при нажатии
+
+            val history = searchHistory.getHistory()
+            println("Текущая история: $history")
+        }
+
+        trackListSearchHistory.adapter = adapterHistory
+
+
+        // Очистка истории
+        clearHistory.setOnClickListener {
+            searchHistory.clearHistory()
         }
 
     }

@@ -37,32 +37,38 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="42dp">
+
         <LinearLayout
+            android:id="@+id/storyTrack"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="19dp"
+                android:layout_gravity="center_horizontal"
                 android:fontFamily="@font/ys_display_medium"
-                android:textColor="?attr/colorSecondaryVariant"
                 android:text="@string/you_searched"
+                android:textColor="?attr/colorSecondaryVariant"
                 android:textFontWeight="500"
-                android:layout_gravity="center_horizontal"/>
+                android:textSize="19dp" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/trackListSearchHistory"
-                tools:listitem="@layout/track_item"
+                style="@style/recyclerSearch"
                 android:layout_marginTop="8dp"
-                style="@style/recyclerSearch"/>
+                tools:listitem="@layout/track_item"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                android:orientation="vertical"
+                tools:itemCount="3"/>
 
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/clearHistory"
-                android:text="@string/you_searched"
+                style="@style/buttonUpdate"
                 android:layout_marginTop="24dp"
-                style="@style/buttonUpdate"/>
+                android:text="@string/clear_history" />
 
         </LinearLayout>
 
