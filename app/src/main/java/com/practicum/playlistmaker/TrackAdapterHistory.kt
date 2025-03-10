@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 
 class TrackAdapterHistory(
-    private val tracks: ArrayList<Track>,
+    private val track: ArrayList<Track>,
     private val onItemClick: (Track) -> Unit
 ) : RecyclerView.Adapter<TrackViewHolder> () {
 
@@ -16,13 +16,13 @@ class TrackAdapterHistory(
     }
 
     override fun onBindViewHolder(holder: TrackViewHolder, position: Int) {
-        val track = tracks[position]
+        val track = track[position]
         holder.bind(track)
         holder.itemView.setOnClickListener {
             onItemClick(track) // Обработка нажатия на трек
-            Log.d("ответ", "$track")
+
         }
     }
 
-    override fun getItemCount(): Int = tracks.size
+    override fun getItemCount(): Int = track.size
 }

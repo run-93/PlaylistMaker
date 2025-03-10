@@ -13,6 +13,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -31,9 +32,11 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Query
 
-class SearchActivity : AppCompatActivity(), TrackAdapter.OnItemClickListener {
+class SearchActivity : AppCompatActivity(), TrackAdapter.OnItemClickListener  {
     private var textSearch: String = "EDIT_TEXT_DEF"
+    private lateinit var searchPref: SharedPreferences
     val SEARCH_KEY = "key_for_search_history"
+
 
     companion object{
         const val EDIT_TEXT_KEY = "EDIT_TEXT_KEY"
@@ -60,22 +63,21 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.OnItemClickListener {
     private lateinit var updateButton: Button
     private lateinit var trackListSearchHistory: RecyclerView
     private lateinit var clearHistory: MaterialButton
+    private lateinit var groopHistory: LinearLayout
 
-    private val track = ArrayList<Track>()
-    private val adapter = TrackAdapter(this)
+    private val track = ArrayList<Track>()// список для результатов поиска
+    private val trackHistory = ArrayList<Track>()// список для истории поиска
+    private val adapter = TrackAdapter(this)// адаптер для результатов поиска
+    private var adapterHistory = TrackAdapter(this)// адаптер для истории поиска
+
 
 // создаем переменную в которой будет храниться история поиска
     private lateinit var searchHistory: SearchHistory
-    private lateinit var searchPreferences: SharedPreferences
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
-
-        // Инициализация SharedPreferences
-        searchPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
-        // Инициализация searchHistory
-        searchHistory = SearchHistory(searchPreferences)
 
         //инициализация объектов на view
         buttonBackSearch = findViewById<MaterialToolbar>(R.id.buttonBackSearch)
@@ -87,6 +89,7 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.OnItemClickListener {
         updateButton = findViewById<Button>(R.id.updateButton)
         trackListSearchHistory = findViewById<RecyclerView>(R.id.trackListSearchHistory)
         clearHistory = findViewById<MaterialButton>(R.id.clearHistory)
+        groopHistory =findViewById<LinearLayout>(R.id.storyTrack)
 
         // переход из активити поиска на главную актививти
         buttonBackSearch.setNavigationOnClickListener{
@@ -109,6 +112,10 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.OnItemClickListener {
                 searchApi(inputEditText.text.toString())
             }
         }
+        //условие для отображения списка истории поиска
+        inputEditText.setOnFocusChangeListener { view, hasFocus ->
+            groopHistory.visibility = if (hasFocus && inputEditText.text.isEmpty() && (searchHistory.getHistory().isNotEmpty())) View.VISIBLE else View.GONE
+        }
 
         val simpleTextWatcher = object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
@@ -119,6 +126,8 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.OnItemClickListener {
                 // Действия во время изменения текста
                 clearButton.visibility = clearButtonVisibility(s)
                 textSearch = s.toString()
+
+                groopHistory.visibility = if (inputEditText.hasFocus() && s?.isEmpty() == true) View.VISIBLE else View.GONE
             }
 
             override fun afterTextChanged(s: Editable?) {
@@ -128,8 +137,9 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.OnItemClickListener {
         inputEditText.addTextChangedListener(simpleTextWatcher)
 
         adapter.track = track
+        adapterHistory.track = trackHistory
         trackListSearch.adapter = adapter
-
+        trackListSearchHistory.adapter = adapterHistory
 
         // осуществление поискового запроса не через кнопку на View, а через кнопку Done, которая появляется на клавиатуре
         inputEditText.setOnEditorActionListener { _, actionId, _ ->
@@ -143,33 +153,38 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.OnItemClickListener {
             }
         }
 
+        // Инициализация SharedPreferences и SearchHistory
+        searchPref = getSharedPreferences("SEARCH_HISTORY", Context.MODE_PRIVATE)
+        searchHistory = SearchHistory(searchPref)
+        loadTracksFromSharedPreferences()
+
         // Очистка истории
         clearHistory.setOnClickListener {
             searchHistory.clearHistory()
+            loadTracksFromSharedPreferences() // Обновляем историю поиска
+            groopHistory.visibility = if(searchHistory.getHistory().isNotEmpty()) View.VISIBLE else View.GONE
         }
 
     }
     // Обработка клика на элементе
     override fun onItemClick(track: Track) {
         // Сохранение данных в SharedPreferences
-        val history = searchPreferences.edit().putString(SEARCH_KEY, searchHistory.addTrack(track).toString()).apply()
-
-        Toast.makeText(this, "Track '${track}' saved to SharedPreferences", Toast.LENGTH_SHORT).show()
+        searchHistory.addTrack(track)
+        loadTracksFromSharedPreferences() // Обновляем историю поиска
     }
 
 private fun searchApi(query: String) {
     iTunesService.search(query).enqueue(object : Callback<TrackResponse> {
         override fun onResponse(call: Call<TrackResponse>, response: Response<TrackResponse>) {
             if (response.code() == 200) {
-                track.clear()
+                track.clear() // Очищаем список результатов поиска
 
                 if (response.body()?.results?.isNotEmpty() == true) {
-                    track.addAll(response.body()?.results!!)
-                    adapter.notifyDataSetChanged()
+                    track.addAll(response.body()?.results!!) // Добавляем данные от сервера
+                    adapter.notifyDataSetChanged()// Обновляем RecyclerView результатов
                     placeholderImage.visibility = View.GONE
                     placeholderMessage.visibility = View.GONE
                     updateButton.visibility = View.GONE
-
                 }
                 if (track.isEmpty()) {
                     showMessage(ErrorType.EMPTY_RESULT)
@@ -251,6 +266,15 @@ private fun searchApi(query: String) {
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
         textSearch = savedInstanceState.getString(EDIT_TEXT_KEY, EDIT_TEXT_DEF)
+    }
+
+    // Загрузка данных из SharedPreferences и обновление RecyclerView
+    private fun loadTracksFromSharedPreferences() {
+        val tracks = searchHistory.getHistory()// получаем историю посика Track
+        trackHistory.clear()// Очищаем список истории
+        trackHistory.addAll(tracks)// Добавляем данные в список истории
+        adapterHistory.track = trackHistory// Передаем данные в адаптер истории
+        adapterHistory.notifyDataSetChanged() // Обновляем RecyclerView
     }
 
 }

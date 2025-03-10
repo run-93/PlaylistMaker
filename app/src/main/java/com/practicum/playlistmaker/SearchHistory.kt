@@ -1,15 +1,17 @@
 package com.practicum.playlistmaker
 
 import android.content.SharedPreferences
+import android.util.Log
 import android.widget.Toast
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
 class SearchHistory(private val searchPreferences: SharedPreferences) {
-    private val SEARCH_KEY = "key_for_search_history"
+    val SEARCH_KEY = "key_for_search_history"
     // Добавление трека в историю
     fun addTrack(track: Track) {
         val history = getHistory()
+        Log.d("history", "$history")
         val existingIndex = history.indexOfFirst { it.trackId == track.trackId }
 
         if (existingIndex != -1) {
