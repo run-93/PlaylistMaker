@@ -1,5 +1,6 @@
 package com.practicum.playlistmaker
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -19,6 +20,7 @@ class TrackAdapterHistory(
         holder.bind(track)
         holder.itemView.setOnClickListener {
             onItemClick(track) // Обработка нажатия на трек
+            Log.d("ответ", "$track")
         }
     }
 

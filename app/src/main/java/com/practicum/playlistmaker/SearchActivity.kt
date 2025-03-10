@@ -2,6 +2,7 @@ package com.practicum.playlistmaker
 
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -30,8 +31,9 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Query
 
-class SearchActivity : AppCompatActivity() {
+class SearchActivity : AppCompatActivity(), TrackAdapter.OnItemClickListener {
     private var textSearch: String = "EDIT_TEXT_DEF"
+    val SEARCH_KEY = "key_for_search_history"
 
     companion object{
         const val EDIT_TEXT_KEY = "EDIT_TEXT_KEY"
@@ -60,15 +62,20 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var clearHistory: MaterialButton
 
     private val track = ArrayList<Track>()
-    private val adapter = TrackAdapter()
+    private val adapter = TrackAdapter(this)
 
 // создаем переменную в которой будет храниться история поиска
     private lateinit var searchHistory: SearchHistory
-
+    private lateinit var searchPreferences: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
+
+        // Инициализация SharedPreferences
+        searchPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+        // Инициализация searchHistory
+        searchHistory = SearchHistory(searchPreferences)
 
         //инициализация объектов на view
         buttonBackSearch = findViewById<MaterialToolbar>(R.id.buttonBackSearch)
@@ -136,29 +143,18 @@ class SearchActivity : AppCompatActivity() {
             }
         }
 
-        // Инициализация SharedPreferences и SearchHistory
-        val searchPref = getSharedPreferences("SEARCH_HISTORY", MODE_PRIVATE)
-        searchHistory = SearchHistory(searchPref)
-
-
-
-        // Инициализация RecyclerView и адаптера для истории поиска
-
-        val adapterHistory = TrackAdapterHistory(track) { track ->
-            searchHistory.addTrack(track) // Добавляем трек в историю при нажатии
-
-            val history = searchHistory.getHistory()
-            println("Текущая история: $history")
-        }
-
-        trackListSearchHistory.adapter = adapterHistory
-
-
         // Очистка истории
         clearHistory.setOnClickListener {
             searchHistory.clearHistory()
         }
 
+    }
+    // Обработка клика на элементе
+    override fun onItemClick(track: Track) {
+        // Сохранение данных в SharedPreferences
+        val history = searchPreferences.edit().putString(SEARCH_KEY, searchHistory.addTrack(track).toString()).apply()
+
+        Toast.makeText(this, "Track '${track}' saved to SharedPreferences", Toast.LENGTH_SHORT).show()
     }
 
 private fun searchApi(query: String) {
@@ -173,6 +169,7 @@ private fun searchApi(query: String) {
                     placeholderImage.visibility = View.GONE
                     placeholderMessage.visibility = View.GONE
                     updateButton.visibility = View.GONE
+
                 }
                 if (track.isEmpty()) {
                     showMessage(ErrorType.EMPTY_RESULT)

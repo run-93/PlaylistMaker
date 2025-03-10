@@ -1,10 +1,11 @@
 package com.practicum.playlistmaker
 
 import android.content.SharedPreferences
+import android.widget.Toast
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
-class SearchHistory(private val searchPref: SharedPreferences) {
+class SearchHistory(private val searchPreferences: SharedPreferences) {
     private val SEARCH_KEY = "key_for_search_history"
     // Добавление трека в историю
     fun addTrack(track: Track) {
@@ -17,6 +18,7 @@ class SearchHistory(private val searchPref: SharedPreferences) {
 
         history.add(0, track) // Добавляем новый трек в начало списка
 
+
         // Удаляем лишние треки, если их больше 10
         if (history.size > 10) {
             history.removeAt(history.size - 1)
@@ -24,13 +26,11 @@ class SearchHistory(private val searchPref: SharedPreferences) {
 
         saveHistory(history)
 
-        // Логирование для отладки
-        println("Трек добавлен в историю: ${track.trackName}")
     }
 
     // Получение истории
     fun getHistory(): ArrayList<Track> {
-        val json = searchPref.getString(SEARCH_KEY, null)
+        val json = searchPreferences.getString(SEARCH_KEY, null)
         return if (json != null) {
             val type = object : TypeToken<ArrayList<Track>>() {}.type
             Gson().fromJson(json, type)
@@ -41,15 +41,16 @@ class SearchHistory(private val searchPref: SharedPreferences) {
 
     // Очистка истории
     fun clearHistory() {
-        searchPref.edit().remove(SEARCH_KEY).apply()
-        println("История очищена")
+        searchPreferences.edit().remove(SEARCH_KEY).apply()
+
     }
 
     // Сохранение истории
     private fun saveHistory(history: ArrayList<Track>) {
         val json = Gson().toJson(history)
-        searchPref.edit().putString(SEARCH_KEY, json).apply()
-        println("История сохранена: $json")
+        searchPreferences.edit().putString(SEARCH_KEY, json).apply()
+
     }
+
 
 }
