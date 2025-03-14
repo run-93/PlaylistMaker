@@ -15,4 +15,6 @@
     <string name="nothing_found">Nothing was found</string>
     <string name="something_went_wrong">Connection problems     The download failed. Check your internet connection</string>
     <string name="update">Update</string>
+    <string name="you_searched">You searched</string>
+    <string name="clear_history">Clear History</string>
 </resources>

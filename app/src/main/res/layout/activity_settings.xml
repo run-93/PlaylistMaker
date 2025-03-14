@@ -14,8 +14,9 @@
         style="@style/toolbarSettings"/>
 
     <com.google.android.material.switchmaterial.SwitchMaterial
-        android:text="@string/dark_theme"
-        style="@style/menuSetingsStyle"/>
+        android:id="@+id/themeSwitcher"
+        style="@style/menuSetingsStyle"
+        android:text="@string/dark_theme" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/toShare"

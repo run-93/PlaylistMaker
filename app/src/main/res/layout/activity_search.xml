@@ -33,6 +33,45 @@
             style="@style/deliteSearchString"/>
     </FrameLayout>
 
+    <LinearLayout
+        android:id="@+id/storyTrack"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="50dp"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:fontFamily="@font/ys_display_medium"
+            android:text="@string/you_searched"
+            android:textColor="?attr/colorSecondaryVariant"
+            android:textFontWeight="500"
+            android:textSize="19dp" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/trackListSearchHistory"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_marginTop="20dp"
+            tools:listitem="@layout/track_item"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            android:orientation="vertical"
+            tools:itemCount="3"/>
+
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/clearHistory"
+            style="@style/buttonUpdate"
+            android:layout_marginTop="24dp"
+            android:text="@string/clear_history"
+            android:visibility="visible"/>
+
+        </LinearLayout>
+
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -61,6 +100,8 @@
         </LinearLayout>
 
     </FrameLayout>
+
+
 
 </LinearLayout>
 

@@ -10,7 +10,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.google.android.material.appbar.MaterialToolbar
+import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.android.material.textview.MaterialTextView
+
 
 class SettingsActivity : AppCompatActivity() {
     @SuppressLint("MissingInflatedId")
@@ -22,6 +24,8 @@ class SettingsActivity : AppCompatActivity() {
         val toShare = findViewById<MaterialTextView>(R.id.toShare)
         val writeSupport = findViewById<MaterialTextView>(R.id.writeSupport)
         val userAgreement = findViewById<MaterialTextView>(R.id.user_agreement)
+        val themeSwitcher = findViewById<SwitchMaterial>(R.id.themeSwitcher)
+
 
         // обработчики нажатия на элементы view
 
@@ -45,6 +49,18 @@ class SettingsActivity : AppCompatActivity() {
             writeUserAgreement()
         }
 
+        // переключатель темы
+        // Получаем текущее состояние темы из класса App
+        val app = application as App
+        val isDarkTheme = app.darkTheme
+
+        // Устанавливаем состояние переключателя в соответствии с текущей темой
+        themeSwitcher.isChecked = isDarkTheme
+
+        themeSwitcher.setOnCheckedChangeListener { switcher, checked ->
+            (applicationContext as App).switchTheme(checked)
+        }
+
     }
 
     //функция отправки текста через имеющиеся приложения
@@ -60,6 +76,7 @@ class SettingsActivity : AppCompatActivity() {
     startActivity(Intent.createChooser(toShareIntent, " "))
     }
 
+    // отправка письма на электронную почту разработчика
     private fun sendSupport() {
         val messageTheme = getString(R.string.message_theme)
         val messageSupport = getString(R.string.message_support)
@@ -72,6 +89,7 @@ class SettingsActivity : AppCompatActivity() {
         startActivity(writeSupportIntent)
     }
 
+    // функция перехода на сайт с пользовательским соглашением
     private fun writeUserAgreement(){
         val url = getString(R.string.url_user_agreement)
         val urlIntent = Intent(Intent.ACTION_VIEW)
