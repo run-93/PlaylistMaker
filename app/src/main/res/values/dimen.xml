@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="main_screen_padding">16dp</dimen>
-    <dimen name="main_screen_textSize">22sp</dimen>
-    <dimen name="settings_screen_textSize">16sp</dimen>
-    <dimen name="radius_corner_Button">16dp</dimen>
-    <dimen name="height_line">20dp</dimen>
+    <dimen name="dimen_16">16dp</dimen>
+    <dimen name="textSize_22">22sp</dimen>
+    <dimen name="textSize_16">16sp</dimen>
+    <dimen name="textSize_14">14sp</dimen>
+    <dimen name="textSize_13">13sp</dimen>
+    <dimen name="radius_corner_Button_16">16dp</dimen>
+    <dimen name="dimen_20">20dp</dimen>
+    <dimen name="dimen_24">24dp</dimen>
 
 </resources>

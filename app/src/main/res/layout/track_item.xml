@@ -52,7 +52,7 @@
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/vector_Icon"
         android:layout_gravity="center_vertical"
-        android:drawableEnd="@drawable/vector"
+        android:drawableEnd="@drawable/bracket"
         android:layout_marginEnd="20dp"
         style="@style/trackItem.TextView"/>
 

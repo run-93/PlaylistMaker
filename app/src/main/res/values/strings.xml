@@ -19,6 +19,11 @@
     <string name="update">Обновить</string>
     <string name="you_searched">Вы искали</string>
     <string name="clear_history">Очистить историю</string>
+    <string name="Duration">Длительность</string>
+    <string name="Album">Альбом</string>
+    <string name="Year">Год</string>
+    <string name="Genre">Жанр</string>
+    <string name="Country">Страна</string>
 
 
 </resources>

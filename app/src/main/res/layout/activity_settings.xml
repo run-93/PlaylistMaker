@@ -32,7 +32,7 @@
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/user_agreement"
-        android:drawableEnd="@drawable/vector"
+        android:drawableEnd="@drawable/bracket"
         android:text="@string/user_agreement"
         style="@style/menuSetingsStyle"/>
 

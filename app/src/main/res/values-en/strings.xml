@@ -17,4 +17,9 @@
     <string name="update">Update</string>
     <string name="you_searched">You searched</string>
     <string name="clear_history">Clear History</string>
+    <string name="Duration">Duration</string>
+    <string name="Album">Album</string>
+    <string name="Year">Year</string>
+    <string name="Genre">Genre</string>
+    <string name="Country">Country</string>
 </resources>

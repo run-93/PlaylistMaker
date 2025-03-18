@@ -25,6 +25,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.appbar.MaterialToolbar
 import com.bumptech.glide.Glide
 import com.google.android.material.button.MaterialButton
+import com.google.gson.Gson
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -110,6 +111,7 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.OnItemClickListener  {
         updateButton.setOnClickListener {
             if (inputEditText.text.isNotEmpty()) {
                 searchApi(inputEditText.text.toString())
+
             }
         }
         //условие для отображения списка истории поиска
@@ -146,6 +148,7 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.OnItemClickListener  {
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 if (inputEditText.text.isNotEmpty()) {
                     searchApi(inputEditText.text.toString())
+
                 }
                 true
             } else {
@@ -171,11 +174,21 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.OnItemClickListener  {
         // Сохранение данных в SharedPreferences
         searchHistory.addTrack(track)
         loadTracksFromSharedPreferences() // Обновляем историю поиска
+// переходим на активити Аудиоплеера
+        val audioPlayerIntent = Intent(this, AudioPlayerActivity::class.java)
+        audioPlayerIntent.putExtra("track", track) // Передаем объект Track
+        startActivity(audioPlayerIntent)
+
     }
 
 private fun searchApi(query: String) {
     iTunesService.search(query).enqueue(object : Callback<TrackResponse> {
         override fun onResponse(call: Call<TrackResponse>, response: Response<TrackResponse>) {
+            // Логируем статус ответа и тело ответа
+            val gson = Gson()
+            val responseBodyString = gson.toJson(response.body())
+            Log.d("ItunesResponse", "Response Body: $responseBodyString")
+
             if (response.code() == 200) {
                 track.clear() // Очищаем список результатов поиска
 
