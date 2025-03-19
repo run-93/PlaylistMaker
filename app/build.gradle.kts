@@ -51,4 +51,8 @@ dependencies {
     implementation ("com.google.code.gson:gson:2.10") //подключаем библиотеку gson
     implementation ("com.squareup.retrofit2:retrofit:2.9.0")// для создание запросов к серверу с использованием API подключаем retrofit
     implementation ("com.squareup.retrofit2:converter-gson:2.9.0")//подключаем конвертер для преобразование ответов json в классы KOTLIN и обратно
+    implementation ("androidx.constraintlayout:constraintlayout:2.2.0-beta01")// подключаем последнее обнавление constraintlayout
+    // To use constraintlayout in compose
+    implementation ("androidx.constraintlayout:constraintlayout-compose:1.1.0-beta01")// компонент для constraintlayout
+
 }

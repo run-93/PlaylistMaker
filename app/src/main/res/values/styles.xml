@@ -35,7 +35,7 @@
         <!-- Устанавливаем шрифт, толщину, цвет и размер букв-->
         <item name="android:textAllCaps">false</item>
         <item name="android:textColor">@color/text_button</item>
-        <item name="android:textSize">@dimen/main_screen_textSize</item>
+        <item name="android:textSize">@dimen/textSize_22</item>
         <item name="android:fontFamily">@font/ys_display_medium</item>
         <item name="android:fontWeight">500</item>
         <item name="android:letterSpacing">0</item>
@@ -45,9 +45,9 @@
         <item name="android:layout_height">0dp</item>
         <item name="android:layout_weight">1</item>
         <item name="android:backgroundTint">@color/white</item>
-        <item name="android:layout_marginHorizontal">@dimen/main_screen_padding</item>
-        <item name="android:layout_marginBottom">@dimen/main_screen_padding</item>
-        <item name="cornerRadius">@dimen/radius_corner_Button</item>
+        <item name="android:layout_marginHorizontal">@dimen/dimen_16</item>
+        <item name="android:layout_marginBottom">@dimen/dimen_16</item>
+        <item name="cornerRadius">@dimen/radius_corner_Button_16</item>
         <item name="iconGravity">textStart</item>
         <item name="iconPadding">1dp</item>
         <item name="iconTint">@color/text_button</item>
@@ -58,15 +58,15 @@
         <!-- Устанавливаем шрифт, толщину, цвет и размер букв-->
         <item name="android:textAllCaps">false</item>
         <item name="android:textColor">?attr/colorOnSecondary</item>
-        <item name="android:textSize">@dimen/settings_screen_textSize</item>
+        <item name="android:textSize">@dimen/textSize_16</item>
         <item name="android:fontFamily">@font/ys_display_regular</item>
         <item name="android:fontWeight">400</item>
 
         <!-- Отступы и другие атрибуты согласно макету-->
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:paddingHorizontal">@dimen/main_screen_padding</item>
-        <item name="android:paddingVertical">@dimen/height_line</item>
+        <item name="android:paddingHorizontal">@dimen/dimen_16</item>
+        <item name="android:paddingVertical">@dimen/dimen_20</item>
 
         <!-- Цвета ползунка и фона для Switch-->
         <item name="thumbTint">@color/switch_thumb_color</item>
@@ -79,7 +79,7 @@
         <item name="android:fontFamily">@font/ys_display_regular</item>
         <item name="android:textFontWeight">400</item>
         <item name="android:maxLines">1</item>
-        <item name="android:textSize">@dimen/settings_screen_textSize</item>
+        <item name="android:textSize">@dimen/textSize_16</item>
         <item name="android:textColor">@color/black</item>
         <item name="android:textColorHint">@color/text_color_hint</item>
         <item name="android:drawableStart">@drawable/ic_search</item>
@@ -88,7 +88,7 @@
         <!-- Отступы и другие атрибуты согласно макету-->
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginHorizontal">@dimen/main_screen_padding</item>
+        <item name="android:layout_marginHorizontal">@dimen/dimen_16</item>
         <item name="android:background">@drawable/rounded_edittext_background</item>
         <item name="android:padding">8.5dp</item>
         <item name="android:drawablePadding">4dp</item>
@@ -152,7 +152,7 @@
         <item name="android:layout_gravity">center</item>
         <item name="android:gravity">center</item>
         <item name="android:fontFamily">@font/ys_display_medium</item>
-        <item name="android:paddingTop">@dimen/main_screen_padding</item>
+        <item name="android:paddingTop">@dimen/dimen_16</item>
         <item name="android:paddingLeft">24dp</item>
         <item name="android:paddingRight">24dp</item>
         <item name="android:textColor">?attr/colorSecondaryVariant</item>
@@ -176,5 +176,42 @@
         <item name="android:visibility">gone</item>
         <item name="cornerRadius">54dp</item>
     </style>
+
+    <style name="PlayerStyleGuideLine">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <style name="playerStyleTrack">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:fontFamily">@font/ys_display_medium</item>
+        <item name="android:textColor">?attr/colorSecondaryVariant</item>
+        <item name="android:textFontWeight">400</item>
+        <item name="android:text">Unknown</item>
+    </style>
+
+    <style name="playerStyleAdditionalInformation">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">@dimen/dimen_16</item>
+        <item name="android:fontFamily">@font/ys_display_regular</item>
+        <item name="android:textColor">@color/text_color_hint</item>
+        <item name="android:textFontWeight">400</item>
+        <item name="android:textSize">@dimen/textSize_13</item>
+    </style>
+
+    <style name="playerStyleAdditionalInformationValue">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginEnd">@dimen/dimen_16</item>
+        <item name="android:fontFamily">@font/ys_display_regular</item>
+        <item name="android:textColor">?attr/colorSecondaryVariant</item>
+        <item name="android:textFontWeight">400</item>
+        <item name="android:textSize">@dimen/textSize_13</item>
+        <item name="android:text">Unknown</item>
+    </style>
+
 
 </resources>
