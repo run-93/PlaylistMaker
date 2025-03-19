@@ -17,6 +17,8 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+const val KEY_EXTRA_TRACK = "track"
+
 class AudioPlayerActivity : AppCompatActivity() {
     private lateinit var buttonBack: ImageButton
     private lateinit var imageCover: ImageView
@@ -51,11 +53,13 @@ class AudioPlayerActivity : AppCompatActivity() {
         countryValue = findViewById<TextView>(R.id.country_value)
 
 // Получаем данные трека из Intent и используем метод в зависимости от версии SDK устроства
-        val track = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            intent.getParcelableExtra("track", Track::class.java)
-        } else {
-            @Suppress("DEPRECATION")
-            intent.getParcelableExtra<Track>("track")
+        val track = when {
+            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> {
+                intent.getParcelableExtra(KEY_EXTRA_TRACK, Track::class.java)
+            } else -> {
+                @Suppress("DEPRECATION")
+                intent.getParcelableExtra<Track>(KEY_EXTRA_TRACK)
+            }
         }
         if (track != null) {
             // Отображаем данные трека

@@ -176,7 +176,7 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.OnItemClickListener  {
         loadTracksFromSharedPreferences() // Обновляем историю поиска
 // переходим на активити Аудиоплеера
         val audioPlayerIntent = Intent(this, AudioPlayerActivity::class.java)
-        audioPlayerIntent.putExtra("track", track) // Передаем объект Track
+        audioPlayerIntent.putExtra(KEY_EXTRA_TRACK, track) // Передаем объект Track
         startActivity(audioPlayerIntent)
 
     }
