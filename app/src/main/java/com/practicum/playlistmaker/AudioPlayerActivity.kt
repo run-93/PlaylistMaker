@@ -136,8 +136,6 @@ class AudioPlayerActivity : AppCompatActivity() {
 
         }
 
-
-
         buttonPlay.setOnClickListener{
             playbackControl()
         }
