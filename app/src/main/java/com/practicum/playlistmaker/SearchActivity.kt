@@ -4,6 +4,8 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -14,6 +16,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -42,6 +45,8 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.OnItemClickListener  {
     companion object{
         const val EDIT_TEXT_KEY = "EDIT_TEXT_KEY"
         const val EDIT_TEXT_DEF = ""
+        private const val CLICK_DEBOUNCE_DELAY = 1000L// константа определяющая задержку нажатия на элемент списка
+        private const val SEARCH_DEBOUNCE_DELAY = 2000L // константа определяющая задержку автоматического выполнения поиск трека
     }
 
     // базовый адрес для API
@@ -55,6 +60,12 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.OnItemClickListener  {
         .build()
     private val iTunesService = retrofit.create(iTunesSearchApi::class.java)
 
+    private var isClickAllowed = true// глобальная переменная определяющая возможность нажатия на кнопку
+
+    private val handler = Handler(Looper.getMainLooper()) // переменная задачи в цикле основного потока
+
+    private val searchRunnable = Runnable { searchApi(inputEditText.text.toString()) }//переменная автоматической отправки запроса поиска
+
     private lateinit var buttonBackSearch: MaterialToolbar
     private lateinit var clearButton: ImageView
     private lateinit var inputEditText: EditText
@@ -65,11 +76,14 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.OnItemClickListener  {
     private lateinit var trackListSearchHistory: RecyclerView
     private lateinit var clearHistory: MaterialButton
     private lateinit var groopHistory: LinearLayout
+    private lateinit var progressBar: ProgressBar
 
     private val track = ArrayList<Track>()// список для результатов поиска
     private val trackHistory = ArrayList<Track>()// список для истории поиска
     private val adapter = TrackAdapter(this)// адаптер для результатов поиска
     private var adapterHistory = TrackAdapter(this)// адаптер для истории поиска
+
+
 
 
 // создаем переменную в которой будет храниться история поиска
@@ -91,6 +105,7 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.OnItemClickListener  {
         trackListSearchHistory = findViewById<RecyclerView>(R.id.trackListSearchHistory)
         clearHistory = findViewById<MaterialButton>(R.id.clearHistory)
         groopHistory =findViewById<LinearLayout>(R.id.storyTrack)
+        progressBar =findViewById<ProgressBar>(R.id.progressBar)
 
         // переход из активити поиска на главную актививти
         buttonBackSearch.setNavigationOnClickListener{
@@ -128,6 +143,7 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.OnItemClickListener  {
                 // Действия во время изменения текста
                 clearButton.visibility = clearButtonVisibility(s)
                 textSearch = s.toString()
+                searchDebounce()
 
                 groopHistory.visibility = if (inputEditText.hasFocus() && s?.isEmpty() == true) View.VISIBLE else View.GONE
             }
@@ -142,19 +158,6 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.OnItemClickListener  {
         adapterHistory.track = trackHistory
         trackListSearch.adapter = adapter
         trackListSearchHistory.adapter = adapterHistory
-
-        // осуществление поискового запроса не через кнопку на View, а через кнопку Done, которая появляется на клавиатуре
-        inputEditText.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
-                if (inputEditText.text.isNotEmpty()) {
-                    searchApi(inputEditText.text.toString())
-
-                }
-                true
-            } else {
-                false
-            }
-        }
 
         // Инициализация SharedPreferences и SearchHistory
         searchPref = getSharedPreferences("SEARCH_HISTORY", Context.MODE_PRIVATE)
@@ -174,14 +177,33 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.OnItemClickListener  {
         // Сохранение данных в SharedPreferences
         searchHistory.addTrack(track)
         loadTracksFromSharedPreferences() // Обновляем историю поиска
-// переходим на активити Аудиоплеера
-        val audioPlayerIntent = Intent(this, AudioPlayerActivity::class.java)
-        audioPlayerIntent.putExtra(KEY_EXTRA_TRACK, track) // Передаем объект Track
-        startActivity(audioPlayerIntent)
+
+        // переходим на активити Аудиоплеера с исключением множественного нажатия на элемент списка треков
+        if (clickDebounce()) {
+            val audioPlayerIntent = Intent(this, AudioPlayerActivity::class.java)
+            audioPlayerIntent.putExtra(KEY_EXTRA_TRACK, track) // Передаем объект Track
+            startActivity(audioPlayerIntent)
+        }
+
 
     }
+// метод задержки нажатия на кнопку (для исключения двойного нажатия)
+    private fun clickDebounce() : Boolean {
+        val current = isClickAllowed
+        if (isClickAllowed) {
+            isClickAllowed = false
+            handler.postDelayed({ isClickAllowed = true }, CLICK_DEBOUNCE_DELAY)
+        }
+        return current
+    }
+// автоматическая отправка запроса поиска с временной задержкой
+    private fun searchDebounce() {
+        handler.removeCallbacks(searchRunnable)
+        handler.postDelayed(searchRunnable, SEARCH_DEBOUNCE_DELAY)
+    }
 
-private fun searchApi(query: String) {
+    private fun searchApi(query: String) {
+        progressBar.visibility = View.VISIBLE // перед запросом показываем progressBar
     iTunesService.search(query).enqueue(object : Callback<TrackResponse> {
         override fun onResponse(call: Call<TrackResponse>, response: Response<TrackResponse>) {
             // Логируем статус ответа и тело ответа
@@ -198,6 +220,7 @@ private fun searchApi(query: String) {
                     placeholderImage.visibility = View.GONE
                     placeholderMessage.visibility = View.GONE
                     updateButton.visibility = View.GONE
+                    progressBar.visibility = View.GONE // прячем элементы экрана
                 }
                 if (track.isEmpty()) {
                     showMessage(ErrorType.EMPTY_RESULT)
@@ -233,6 +256,7 @@ private fun searchApi(query: String) {
         placeholderImage.visibility = View.VISIBLE
         placeholderMessage.text = getString(textID)
         placeholderMessage.visibility = View.VISIBLE
+        progressBar.visibility = View.GONE
 
         // Установка видимости кнопки
         updateButton.visibility = if (isButtonVisible) View.VISIBLE else View.GONE
