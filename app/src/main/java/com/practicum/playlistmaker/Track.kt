@@ -13,7 +13,8 @@ data class Track(
     @SerializedName("collectionName") val collectionName: String?, // название альбома
     @SerializedName("releaseDate") val releaseDate: String?, // год релиза трека
     @SerializedName("primaryGenreName") val primaryGenreName: String?, // жанр трека
-    @SerializedName("country") val country: String? // страна исполнителя
+    @SerializedName("country") val country: String?, // страна исполнителя
+    @SerializedName("previewUrl") val previewUrl: String? // отрывок текста
 ): Parcelable {
     // Конструктор для Parcelable
     constructor(parcel: Parcel) : this(
@@ -25,7 +26,8 @@ data class Track(
         parcel.readString(),
         parcel.readString(),
         parcel.readString(),
-        parcel.readString()
+        parcel.readString(),
+        parcel.readString(),
     )
 
     // Записываем данные в Parcel
@@ -39,6 +41,7 @@ data class Track(
         parcel.writeString(releaseDate)
         parcel.writeString(primaryGenreName)
         parcel.writeString(country)
+        parcel.writeString(previewUrl)
     }
 
     // Описываем содержимое объекта (обычно возвращаем 0)
