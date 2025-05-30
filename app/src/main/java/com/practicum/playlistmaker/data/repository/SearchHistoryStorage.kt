@@ -1,15 +1,22 @@
-package com.practicum.playlistmaker
+package com.practicum.playlistmaker.data.repository
 
 import android.content.SharedPreferences
 import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.practicum.playlistmaker.domain.models.Track
+import com.practicum.playlistmaker.domain.repository.SearchHistoryRepository
 
-class SearchHistory(private val searchPreferences: SharedPreferences) {
-    val SEARCH_KEY = "key_for_search_history"
-    // Добавление трека в историю
-    fun addTrack(track: Track) {
+class SearchHistoryStorage (private val searchPreferences: SharedPreferences,
+                            private val gson: Gson
+    ) : SearchHistoryRepository {
+
+        companion object {
+            private const val SEARCH_KEY = "key_for_search_history"
+            private const val MAX_HISTORY_SIZE = 10
+        }
+
+    override fun addTrack(track: Track) {
         val history = getHistory()
         Log.d("history", "$history")
         val existingIndex = history.indexOfFirst { it.trackId == track.trackId }
@@ -27,11 +34,10 @@ class SearchHistory(private val searchPreferences: SharedPreferences) {
         }
 
         saveHistory(history)
-
     }
 
     // Получение истории
-    fun getHistory(): ArrayList<Track> {
+    override fun getHistory(): ArrayList<Track> {
         val json = searchPreferences.getString(SEARCH_KEY, null)
         return if (json != null) {
             val type = object : TypeToken<ArrayList<Track>>() {}.type
@@ -41,18 +47,13 @@ class SearchHistory(private val searchPreferences: SharedPreferences) {
         }
     }
 
-    // Очистка истории
-    fun clearHistory() {
+    override fun clearHistory() {
         searchPreferences.edit().remove(SEARCH_KEY).apply()
-
     }
 
-    // Сохранение истории
-    private fun saveHistory(history: ArrayList<Track>) {
-        val json = Gson().toJson(history)
+    private fun saveHistory(history: List<Track>) {
+        val json = gson.toJson(history)
         searchPreferences.edit().putString(SEARCH_KEY, json).apply()
-
     }
-
 
 }

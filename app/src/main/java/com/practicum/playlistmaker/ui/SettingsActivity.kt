@@ -9,7 +9,6 @@ import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.android.material.textview.MaterialTextView
 import com.practicum.playlistmaker.App
-import com.practicum.playlistmaker.MainActivity
 import com.practicum.playlistmaker.R
 
 

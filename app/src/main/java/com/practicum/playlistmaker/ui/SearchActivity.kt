@@ -23,11 +23,11 @@ import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.button.MaterialButton
 import com.practicum.playlistmaker.Creator
 import com.practicum.playlistmaker.ErrorType
-import com.practicum.playlistmaker.MainActivity
 import com.practicum.playlistmaker.R
-import com.practicum.playlistmaker.SearchHistory
+import com.practicum.playlistmaker.data.repository.SearchHistoryStorage
 import com.practicum.playlistmaker.domain.api.TrackInteractor
 import com.practicum.playlistmaker.domain.models.Track
+import com.practicum.playlistmaker.domain.repository.SearchHistoryRepository
 
 class SearchActivity : AppCompatActivity(), TrackAdapter.OnItemClickListener {
 
@@ -36,7 +36,6 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.OnItemClickListener {
         const val EDIT_TEXT_DEF = ""
         private const val CLICK_DEBOUNCE_DELAY = 1000L// константа определяющая задержку нажатия на элемент списка
         private const val SEARCH_DEBOUNCE_DELAY = 2000L // константа определяющая задержку автоматического выполнения поиск трека
-        private const val SEARCH_KEY = "key_for_search_history"
     }
 
     private lateinit var buttonBackSearch: MaterialToolbar
@@ -57,9 +56,10 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.OnItemClickListener {
     private var adapterHistory = TrackAdapter(this)// адаптер для истории поиска
     private val handler = Handler(Looper.getMainLooper()) // переменная задачи в цикле основного потока
     private var isClickAllowed = true// глобальная переменная определяющая возможность нажатия на кнопку
-    private lateinit var searchHistory: SearchHistory // создаем переменную в которой будет храниться история поиска
     private lateinit var trackInteractor: TrackInteractor // переменая для отправки запроса на сервер
-
+    private val searchHistoryRepository: SearchHistoryRepository by lazy {
+        Creator.provideSearchHistoryRepository(this)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,13 +67,6 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.OnItemClickListener {
 
         trackInteractor =
             Creator.provideTrackInteractor()// инициализация интерактора для создания класса со строкой поиска
-
-        searchHistory = SearchHistory(
-            getSharedPreferences(
-                "SEARCH_HISTORY",
-                Context.MODE_PRIVATE
-            )
-        )  // Инициализация ShadPrefererences и SearchHistory
 
         initViews()
         setupAdapter()
@@ -124,22 +117,25 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.OnItemClickListener {
 
         //кнопка очистки истории поиска
         clearHistory.setOnClickListener {
-            searchHistory.clearHistory()
+            searchHistoryRepository.clearHistory()
             loadSearchHistory()
         }
         //условие для отображения списка истории поиска
         inputEditText.setOnFocusChangeListener { view, hasFocus ->
             groopHistory.visibility = if (hasFocus && inputEditText.text.isEmpty()
-                && (searchHistory.getHistory().isNotEmpty())) View.VISIBLE else View.GONE
+                && (searchHistoryRepository.getHistory().isNotEmpty())) View.VISIBLE else View.GONE
         }
 
         inputEditText.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 clearButton.visibility = if (s.isNullOrEmpty()) View.GONE else View.VISIBLE
+
                 if (s.isNullOrEmpty()) {
                     loadSearchHistory() // Показывает историю поиска при пустом поле
+                    progressBar.visibility = View.GONE
                 } else {
+                    progressBar.visibility = View.VISIBLE
                     handler.removeCallbacks(searchRunnable) // Отменяет предыдущий отложенный поиск
                     handler.postDelayed(searchRunnable, SEARCH_DEBOUNCE_DELAY) // Запускает поиск с задержкой
                 }
@@ -254,11 +250,11 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.OnItemClickListener {
           // функция вывода на экран истории поиска
     private fun loadSearchHistory() {
         trackHistory.clear()
-        trackHistory.addAll(searchHistory.getHistory())
+        trackHistory.addAll(searchHistoryRepository.getHistory())
         adapterHistory.track = trackHistory
         adapterHistory.notifyDataSetChanged()
 
-        groopHistory.visibility = if (inputEditText.hasFocus() && trackHistory.isNotEmpty()) {
+        groopHistory.visibility = if (inputEditText.hasFocus() && trackHistory.isNotEmpty() && inputEditText.text.isEmpty()) {
             View.VISIBLE
         } else {
             View.GONE
@@ -269,7 +265,7 @@ class SearchActivity : AppCompatActivity(), TrackAdapter.OnItemClickListener {
     // переходим на активити Аудиоплеера с исключением множественного нажатия на элемент списка треков
     override fun onItemClick(track: Track) {
         if (clickDebounce()) {
-            searchHistory.addTrack(track)
+            searchHistoryRepository.addTrack(track)
             startActivity(Intent(this, AudioPlayerActivity::class.java).apply {
                 putExtra(AudioPlayerActivity.KEY_EXTRA_TRACK, track)
             })
