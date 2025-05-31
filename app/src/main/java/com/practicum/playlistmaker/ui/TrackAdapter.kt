@@ -1,10 +1,10 @@
-package com.practicum.playlistmaker
+package com.practicum.playlistmaker.ui
 
-import android.os.Handler
-import android.os.Looper
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.practicum.playlistmaker.R
+import com.practicum.playlistmaker.domain.models.Track
 
 
 class TrackAdapter(private val listener: OnItemClickListener) : RecyclerView.Adapter<TrackViewHolder> () {
