@@ -1,54 +1,45 @@
 package com.practicum.playlistmaker.settings.ui
 
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.google.android.material.appbar.MaterialToolbar
-import com.google.android.material.switchmaterial.SwitchMaterial
-import com.google.android.material.textview.MaterialTextView
+import com.practicum.playlistmaker.databinding.ActivitySettingsBinding
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.common.App
 import com.practicum.playlistmaker.main.ui.MainActivity
 
 class SettingsActivity : AppCompatActivity() {
-    @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_settings)
+        val binding = ActivitySettingsBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        val buttonBack = findViewById<MaterialToolbar>(R.id.buttonBack)
-        val toShare = findViewById<MaterialTextView>(R.id.toShare)
-        val writeSupport = findViewById<MaterialTextView>(R.id.writeSupport)
-        val userAgreement = findViewById<MaterialTextView>(R.id.user_agreement)
-        val themeSwitcher = findViewById<SwitchMaterial>(R.id.themeSwitcher)
-
-        buttonBack.setNavigationOnClickListener{
+        binding.buttonBack.setNavigationOnClickListener{
             val backIntent = Intent(this, MainActivity::class.java)
             backIntent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
             startActivity(backIntent)
             finish()
         }
 
-        toShare.setOnClickListener{
+        binding.toShare.setOnClickListener{
             toShareApp()
         }
 
-        writeSupport.setOnClickListener{
+        binding.writeSupport.setOnClickListener{
             sendSupport()
         }
 
-        userAgreement.setOnClickListener{
+        binding.userAgreement.setOnClickListener{
             writeUserAgreement()
         }
 
         val app = application as App
         val isDarkTheme = app.darkTheme
 
-        themeSwitcher.isChecked = isDarkTheme
+        binding.themeSwitcher.isChecked = isDarkTheme
 
-        themeSwitcher.setOnCheckedChangeListener { switcher, checked ->
+        binding.themeSwitcher.setOnCheckedChangeListener { switcher, checked ->
             (applicationContext as App).switchTheme(checked)
         }
     }

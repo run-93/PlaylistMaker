@@ -4,101 +4,57 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.practicum.playlistmaker.common.ErrorType
+import com.practicum.playlistmaker.search.domain.api.TrackInteractor
 import com.practicum.playlistmaker.search.domain.models.Track
-import com.practicum.playlistmaker.search.domain.repository.SearchHistoryRepository
-import com.practicum.playlistmaker.search.domain.repository.TrackRepository
-import java.io.IOException
-import java.util.concurrent.Executors
-import java.util.concurrent.ScheduledFuture
-import java.util.concurrent.TimeUnit
 
 class SearchViewModel(
-    private val trackRepository: TrackRepository,
-    private val searchHistoryRepository: SearchHistoryRepository
+    private val trackInteractor: TrackInteractor
 ) : ViewModel() {
 
     private val _searchState = MutableLiveData<SearchState>()
     val searchState: LiveData<SearchState> = _searchState
 
-    private val executor = Executors.newScheduledThreadPool(2)
-    private var searchFuture: ScheduledFuture<*>? = null
-    private val searchDebounceDelay = 2000L
-
-    fun searchDebounced(query: String) {
-        searchFuture?.cancel(false)
-
-        if (query.isEmpty()) {
-            showHistory()
-            return
+    init {
+        trackInteractor.getSearchState().observeForever { domainState ->
+            val uiState = when (domainState) {
+                is TrackInteractor.SearchState.Loading -> SearchState.Loading
+                is TrackInteractor.SearchState.Empty -> SearchState.Empty
+                is TrackInteractor.SearchState.EmptyHistory -> SearchState.EmptyHistory
+                is TrackInteractor.SearchState.Content -> SearchState.Content(domainState.tracks)
+                is TrackInteractor.SearchState.History -> SearchState.History(domainState.tracks)
+                is TrackInteractor.SearchState.Error -> SearchState.Error(
+                    when (domainState.errorType) {
+                        ErrorType.NETWORK_ERROR -> ErrorType.NETWORK_ERROR
+                        ErrorType.EMPTY_RESULT -> ErrorType.EMPTY_RESULT
+                    }
+                )
+            }
+            _searchState.postValue(uiState)
         }
-
-        searchFuture = executor.schedule({
-            performSearch(query)
-        }, searchDebounceDelay, TimeUnit.MILLISECONDS)
     }
 
-    private fun performSearch(query: String) {
-        _searchState.postValue(SearchState.Loading)
-
-        executor.execute {
-            try {
-                val tracks = trackRepository.search(query)
-
-                // Если список пустой, но исключения не было - значит действительно ничего не найдено
-                if (tracks.isEmpty()) {
-                    _searchState.postValue(SearchState.Empty)
-                } else {
-                    _searchState.postValue(SearchState.Content(tracks))
-                }
-
-            } catch (e: IOException) {
-                // Сетевая ошибка - показываем сообщение об ошибке сети
-                _searchState.postValue(SearchState.Error(ErrorType.NETWORK_ERROR))
-            } catch (e: Exception) {
-                // Другие ошибки
-                _searchState.postValue(SearchState.Error(ErrorType.NETWORK_ERROR))
-            }
-        }
+    fun searchDebounced(query: String) {
+        trackInteractor.searchDebounced(query)
     }
 
     fun showHistory() {
-        try {
-            val history = searchHistoryRepository.getHistory()
-            if (history.isEmpty()) {
-                _searchState.postValue(SearchState.EmptyHistory)
-            } else {
-                _searchState.postValue(SearchState.History(history))
-            }
-        } catch (e: Exception) {
-            _searchState.postValue(SearchState.EmptyHistory)
-        }
+        trackInteractor.showHistory()
     }
 
     fun addTrackToHistory(track: Track) {
-        try {
-            searchHistoryRepository.addTrack(track)
-        } catch (e: Exception) {
-            // Игнорируем ошибки при добавлении в историю
-        }
+        trackInteractor.addTrackToHistory(track)
     }
 
     fun clearHistory() {
-        try {
-            searchHistoryRepository.clearHistory()
-            showHistory()
-        } catch (e: Exception) {
-            // Игнорируем ошибки при очистке истории
-        }
+        trackInteractor.clearHistory()
     }
 
     fun clearSearch() {
-        searchFuture?.cancel(false)
-        showHistory()
+        trackInteractor.clearSearch()
     }
 
     override fun onCleared() {
         super.onCleared()
-        searchFuture?.cancel(true)
-        executor.shutdown()
+        (trackInteractor as? com.practicum.playlistmaker.search.domain.impl.TrackInteractorImpl)?.onCleared()
     }
 }
