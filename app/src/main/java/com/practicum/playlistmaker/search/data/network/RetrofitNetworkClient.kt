@@ -29,7 +29,7 @@ class RetrofitNetworkClient : NetworkClient {
                     val body = resp.body() ?: Response()
                     body.apply { resultCode = resp.code() }
                 } else {
-                    // HTTP ошибка (4xx, 5xx)
+                    // HTTP ошибка
                     Response().apply { resultCode = resp.code() }
                 }
             } else {
