@@ -2,8 +2,6 @@ package com.practicum.playlistmaker.search.ui
 
 import android.content.Context
 import android.content.Intent
-import android.net.ConnectivityManager
-import android.net.NetworkCapabilities
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -248,13 +246,6 @@ class SearchActivity : AppCompatActivity() {
         view?.let {
             inputMethodManager.hideSoftInputFromWindow(it.windowToken, 0)
         }
-    }
-
-    private fun isOnline(): Boolean {
-        val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val network = connectivityManager.activeNetwork
-        val networkCapabilities = connectivityManager.getNetworkCapabilities(network)
-        return networkCapabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

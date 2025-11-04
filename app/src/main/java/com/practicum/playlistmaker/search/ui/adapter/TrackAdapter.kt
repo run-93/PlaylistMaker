@@ -6,15 +6,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.search.domain.models.Track
 
+class TrackAdapter(private val onItemClick: (Track) -> Unit) : RecyclerView.Adapter<TrackViewHolder>() {
 
-class TrackAdapter(private val listener: OnItemClickListener) : RecyclerView.Adapter<TrackViewHolder> () {
-
-    var track = ArrayList<Track>()
-
-    // Интерфейс для обработки кликов
-    interface OnItemClickListener {
-        fun onItemClick(track: Track)
-    }
+    var tracks = listOf<Track>()
+        set(value) {
+            field = value
+            notifyDataSetChanged()
+        }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TrackViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.track_item, parent, false)
@@ -22,16 +20,11 @@ class TrackAdapter(private val listener: OnItemClickListener) : RecyclerView.Ada
     }
 
     override fun onBindViewHolder(holder: TrackViewHolder, position: Int) {
-        holder.bind(track.get(position))
-
-        // Устанавливаем обработчик клика на элемент
+        holder.bind(tracks[position])
         holder.itemView.setOnClickListener {
-            listener.onItemClick(track.get(position))
+            onItemClick(tracks[position])
         }
     }
 
-    override fun getItemCount(): Int {
-        return track.size
-    }
-
+    override fun getItemCount(): Int = tracks.size
 }

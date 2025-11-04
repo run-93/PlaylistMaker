@@ -7,28 +7,27 @@ import com.google.gson.reflect.TypeToken
 import com.practicum.playlistmaker.search.domain.models.Track
 import com.practicum.playlistmaker.search.domain.repository.SearchHistoryRepository
 
-class SearchHistoryStorage (private val searchPreferences: SharedPreferences,
-                            private val gson: Gson
-    ) : SearchHistoryRepository {
+class SearchHistoryStorage(
+    private val searchPreferences: SharedPreferences,
+    private val gson: Gson
+) : SearchHistoryRepository {
 
-        companion object {
-            private const val SEARCH_KEY = "key_for_search_history"
-            private const val MAX_HISTORY_SIZE = 10
-        }
+    companion object {
+        private const val SEARCH_KEY = "key_for_search_history"
+        private const val MAX_HISTORY_SIZE = 10
+    }
 
     override fun addTrack(track: Track) {
-        val history = getHistory()
+        val history = getHistory().toMutableList()
         Log.d("history", "$history")
         val existingIndex = history.indexOfFirst { it.trackId == track.trackId }
 
         if (existingIndex != -1) {
-            history.removeAt(existingIndex) // Удаляем старую запись, если трек уже есть в истории
+            history.removeAt(existingIndex)
         }
 
-        history.add(0, track) // Добавляем новый трек в начало списка
+        history.add(0, track)
 
-
-        // Удаляем лишние треки, если их больше 10
         if (history.size > MAX_HISTORY_SIZE) {
             history.removeAt(history.size - 1)
         }
@@ -36,14 +35,13 @@ class SearchHistoryStorage (private val searchPreferences: SharedPreferences,
         saveHistory(history)
     }
 
-    // Получение истории
-    override fun getHistory(): ArrayList<Track> {
+    override fun getHistory(): List<Track> {
         val json = searchPreferences.getString(SEARCH_KEY, null)
         return if (json != null) {
             val type = object : TypeToken<ArrayList<Track>>() {}.type
-            Gson().fromJson(json, type)
+            gson.fromJson(json, type) ?: emptyList()
         } else {
-            arrayListOf()
+            emptyList()
         }
     }
 
@@ -55,5 +53,4 @@ class SearchHistoryStorage (private val searchPreferences: SharedPreferences,
         val json = gson.toJson(history)
         searchPreferences.edit().putString(SEARCH_KEY, json).apply()
     }
-
 }
