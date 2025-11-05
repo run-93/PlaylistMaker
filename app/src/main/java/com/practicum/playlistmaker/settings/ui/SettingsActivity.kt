@@ -3,45 +3,78 @@ package com.practicum.playlistmaker.settings.ui
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.practicum.playlistmaker.databinding.ActivitySettingsBinding
 import com.practicum.playlistmaker.R
 import com.practicum.playlistmaker.common.App
+import com.practicum.playlistmaker.creator.Creator
 import com.practicum.playlistmaker.main.ui.MainActivity
 
 class SettingsActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivitySettingsBinding
+    private val viewModel: SettingsViewModel by viewModels {
+        SettingsViewModel.provideFactory(
+            Creator.provideThemeInteractor(),
+            applicationContext as App
+        )
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val binding = ActivitySettingsBinding.inflate(layoutInflater)
+        binding = ActivitySettingsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        setupClickListeners()
+        observeViewModel()
+    }
+
+    private fun setupClickListeners() {
         binding.buttonBack.setNavigationOnClickListener{
-            val backIntent = Intent(this, MainActivity::class.java)
-            backIntent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-            startActivity(backIntent)
-            finish()
+            viewModel.onBackClicked()
         }
 
         binding.toShare.setOnClickListener{
-            toShareApp()
+            viewModel.onShareClicked()
         }
 
         binding.writeSupport.setOnClickListener{
-            sendSupport()
+            viewModel.onSupportClicked()
         }
 
         binding.userAgreement.setOnClickListener{
-            writeUserAgreement()
+            viewModel.onUserAgreementClicked()
         }
-
-        val app = application as App
-        val isDarkTheme = app.darkTheme
-
-        binding.themeSwitcher.isChecked = isDarkTheme
 
         binding.themeSwitcher.setOnCheckedChangeListener { switcher, checked ->
-            (applicationContext as App).switchTheme(checked)
+            viewModel.switchTheme(checked)
         }
+    }
+
+    private fun observeViewModel() {
+        viewModel.screenState.observe(this) { state ->
+            when (state) {
+                is SettingsViewModel.ScreenState.ThemeChanged -> {
+                    binding.themeSwitcher.setOnCheckedChangeListener(null)
+                    binding.themeSwitcher.isChecked = state.isDarkTheme
+                    binding.themeSwitcher.setOnCheckedChangeListener { switcher, checked ->
+                        viewModel.switchTheme(checked)
+                    }
+                }
+                SettingsViewModel.ScreenState.NavigateBack -> navigateBack()
+                SettingsViewModel.ScreenState.NavigateShare -> toShareApp()
+                SettingsViewModel.ScreenState.NavigateSupport -> sendSupport()
+                SettingsViewModel.ScreenState.NavigateUserAgreement -> writeUserAgreement()
+            }
+        }
+    }
+
+    private fun navigateBack() {
+        val backIntent = Intent(this, MainActivity::class.java)
+        backIntent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+        startActivity(backIntent)
+        finish()
     }
 
     private fun toShareApp() {

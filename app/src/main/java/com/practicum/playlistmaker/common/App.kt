@@ -2,27 +2,36 @@ package com.practicum.playlistmaker.common
 
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
+import com.practicum.playlistmaker.creator.Creator
+import com.practicum.playlistmaker.settings.domain.api.ThemeInteractor
 
-// создаем в приложении переменную в которой будет храниться значение из файла Shared Preferences и ключ для доступа к значению
-const val THEME_PREFERENCES = "theme_preferences"
-const val SWITCH_KEY = "key_for_theme"
+class App : Application() {
 
-class App : Application(){
-    var darkTheme = false
+    private lateinit var themeInteractor: ThemeInteractor
+
     override fun onCreate() {
         super.onCreate()
-        // получаем сохраненные настройки из Shared Preferences файла theme_preferences
-        val themePrefs = getSharedPreferences(THEME_PREFERENCES, MODE_PRIVATE)
 
-        // берем значение переменной из файла theme_preferences, если он пустой, то по умолчанию берем false
-        darkTheme = themePrefs.getBoolean(SWITCH_KEY, false)
-        // применяем текущую тему
-        switchTheme(darkTheme)
+        // Инициализируем Creator
+        Creator.init(this)
+
+        // Получаем интерактор темы
+        themeInteractor = Creator.provideThemeInteractor()
+
+        // Применяем сохраненную тему
+        applySavedTheme()
+    }
+
+    private fun applySavedTheme() {
+        val isDarkTheme = themeInteractor.getCurrentTheme()
+        switchTheme(isDarkTheme)
     }
 
     fun switchTheme(darkThemeEnabled: Boolean) {
-        darkTheme = darkThemeEnabled
-        //Устанвливаем тему в приложении
+        // Сохраняем настройки через интерактор
+        themeInteractor.switchTheme(darkThemeEnabled)
+
+        // Применяем тему
         AppCompatDelegate.setDefaultNightMode(
             if (darkThemeEnabled) {
                 AppCompatDelegate.MODE_NIGHT_YES
@@ -30,10 +39,8 @@ class App : Application(){
                 AppCompatDelegate.MODE_NIGHT_NO
             }
         )
-        //Сохраняем текущие настройки в файле theme_preferences
-        val themePrefs = getSharedPreferences(THEME_PREFERENCES, MODE_PRIVATE)
-        themePrefs.edit()
-            .putBoolean(SWITCH_KEY, darkTheme)
-            .apply()
     }
+
+    val darkTheme: Boolean
+        get() = themeInteractor.getCurrentTheme()
 }

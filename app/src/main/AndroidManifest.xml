@@ -30,6 +30,7 @@
 
         <activity
             android:name=".player.ui.AudioPlayerActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
             android:exported="false" />
 
         <activity

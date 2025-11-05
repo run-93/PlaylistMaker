@@ -12,11 +12,8 @@ import java.util.Locale
 
 class PlayerViewModel : ViewModel() {
 
-    private val _playerState = MutableLiveData<PlayerState>()
-    val playerState: LiveData<PlayerState> = _playerState
-
-    private val _currentPosition = MutableLiveData<String>()
-    val currentPosition: LiveData<String> = _currentPosition
+    private val _uiState = MutableLiveData<PlayerUiState>()
+    val uiState: LiveData<PlayerUiState> = _uiState
 
     private var mediaPlayer: MediaPlayer? = null
     private var currentTrack: Track? = null
@@ -24,23 +21,27 @@ class PlayerViewModel : ViewModel() {
     private var updatePositionRunnable: Runnable? = null
 
     companion object {
-        private const val STATE_DEFAULT = 0
-        private const val STATE_PREPARED = 1
-        private const val STATE_PLAYING = 2
-        private const val STATE_PAUSED = 3
         private const val UPDATE_INTERVAL = 300L
     }
 
-    private var playerStateInternal = STATE_DEFAULT
-
     fun initialize(track: Track) {
         currentTrack = track
-        _playerState.value = PlayerState(
-            track = track,
-            isPlayButtonEnabled = false,
-            isPlaying = false
+
+        _uiState.value = PlayerUiState(
+            trackInfo = TrackInfoState(
+                trackName = track.trackName,
+                artistName = track.artistName,
+                trackTime = track.trackTime,
+                album = track.collectionName ?: "Unknown Album",
+                releaseYear = track.releaseDate?.take(4) ?: "Unknown Year",
+                genre = track.primaryGenreName ?: "Unknown Genre",
+                country = track.country ?: "Unknown Country",
+                artworkUrl = track.getCoverArtwork()
+            ),
+            playbackState = PlaybackState.PREPARING,
+            currentPosition = "00:00"
         )
-        _currentPosition.value = "00:00"
+
         preparePlayer()
     }
 
@@ -49,17 +50,15 @@ class PlayerViewModel : ViewModel() {
         mediaPlayer = MediaPlayer().apply {
             setDataSource(currentTrack?.previewUrl)
             setOnPreparedListener {
-                playerStateInternal = STATE_PREPARED
-                _playerState.value = _playerState.value?.copy(
-                    isPlayButtonEnabled = true
+                _uiState.value = _uiState.value?.copy(
+                    playbackState = PlaybackState.PREPARED
                 )
             }
             setOnCompletionListener {
-                playerStateInternal = STATE_PREPARED
-                _playerState.value = _playerState.value?.copy(
-                    isPlaying = false
+                _uiState.value = _uiState.value?.copy(
+                    playbackState = PlaybackState.PREPARED,
+                    currentPosition = "00:00"
                 )
-                _currentPosition.value = "00:00"
                 handler.removeCallbacks(updatePositionRunnable ?: return@setOnCompletionListener)
             }
             prepareAsync()
@@ -67,26 +66,26 @@ class PlayerViewModel : ViewModel() {
     }
 
     fun playbackControl() {
-        when (playerStateInternal) {
-            STATE_PLAYING -> pausePlayer()
-            STATE_PREPARED, STATE_PAUSED -> startPlayer()
+        val currentState = _uiState.value?.playbackState
+        when (currentState) {
+            PlaybackState.PLAYING -> pausePlayer()
+            PlaybackState.PREPARED, PlaybackState.PAUSED -> startPlayer()
+            else -> {} // Игнорируем другие состояния
         }
     }
 
     private fun startPlayer() {
         mediaPlayer?.start()
-        playerStateInternal = STATE_PLAYING
-        _playerState.value = _playerState.value?.copy(
-            isPlaying = true
+        _uiState.value = _uiState.value?.copy(
+            playbackState = PlaybackState.PLAYING
         )
         startPositionUpdates()
     }
 
     private fun pausePlayer() {
         mediaPlayer?.pause()
-        playerStateInternal = STATE_PAUSED
-        _playerState.value = _playerState.value?.copy(
-            isPlaying = false
+        _uiState.value = _uiState.value?.copy(
+            playbackState = PlaybackState.PAUSED
         )
         stopPositionUpdates()
     }
@@ -94,9 +93,11 @@ class PlayerViewModel : ViewModel() {
     private fun startPositionUpdates() {
         updatePositionRunnable = object : Runnable {
             override fun run() {
-                if (playerStateInternal == STATE_PLAYING) {
+                if (_uiState.value?.playbackState == PlaybackState.PLAYING) {
                     val position = getCurrentPosition()
-                    _currentPosition.value = position
+                    _uiState.value = _uiState.value?.copy(
+                        currentPosition = position
+                    )
                     handler.postDelayed(this, UPDATE_INTERVAL)
                 }
             }
@@ -123,8 +124,3 @@ class PlayerViewModel : ViewModel() {
     }
 }
 
-data class PlayerState(
-    val track: Track,
-    val isPlayButtonEnabled: Boolean,
-    val isPlaying: Boolean
-)

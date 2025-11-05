@@ -17,17 +17,15 @@ class SearchViewModel(
     init {
         trackInteractor.getSearchState().observeForever { domainState ->
             val uiState = when (domainState) {
-                is TrackInteractor.SearchState.Loading -> SearchState.Loading
-                is TrackInteractor.SearchState.Empty -> SearchState.Empty
-                is TrackInteractor.SearchState.EmptyHistory -> SearchState.EmptyHistory
-                is TrackInteractor.SearchState.Content -> SearchState.Content(domainState.tracks)
-                is TrackInteractor.SearchState.History -> SearchState.History(domainState.tracks)
-                is TrackInteractor.SearchState.Error -> SearchState.Error(
-                    when (domainState.errorType) {
-                        ErrorType.NETWORK_ERROR -> ErrorType.NETWORK_ERROR
-                        ErrorType.EMPTY_RESULT -> ErrorType.EMPTY_RESULT
-                    }
-                )
+                is SearchState.Loading -> SearchState.Loading
+                is SearchState.EmptyHistory -> SearchState.EmptyHistory
+                is SearchState.Content -> SearchState.Content(domainState.tracks)
+                is SearchState.History -> SearchState.History(domainState.tracks)
+                is SearchState.Error -> SearchState.Error(domainState.errorType)
+                else -> {
+                    // Обработка непредусмотренных состояний (например, логирование)
+                    SearchState.EmptyHistory // или другое состояние по умолчанию
+                }
             }
             _searchState.postValue(uiState)
         }
@@ -55,6 +53,6 @@ class SearchViewModel(
 
     override fun onCleared() {
         super.onCleared()
-        (trackInteractor as? com.practicum.playlistmaker.search.domain.impl.TrackInteractorImpl)?.onCleared()
+        (trackInteractor as? com.practicum.playlistmaker.search.domain.impl.TrackInteractorImpl)?.destroy()
     }
 }

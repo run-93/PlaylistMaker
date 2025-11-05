@@ -28,7 +28,6 @@ class AudioPlayerActivity : AppCompatActivity() {
         binding = AudioPlayerBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        initViews()
         setupClickListeners()
 
         val track = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -41,13 +40,8 @@ class AudioPlayerActivity : AppCompatActivity() {
             return
         }
 
-        setupTrackInfo(track)
         viewModel.initialize(track)
         observeViewModel()
-    }
-
-    private fun initViews() {
-        // Все View уже доступны через binding, функция оставлена для совместимости
     }
 
     private fun setupClickListeners() {
@@ -62,20 +56,50 @@ class AudioPlayerActivity : AppCompatActivity() {
         }
     }
 
-    private fun setupTrackInfo(track: Track) {
-        binding.trackName.text = track.trackName
-        binding.artistName.text = track.artistName
-        binding.durationValue.text = track.trackTime
-        binding.albumValue.text = track.collectionName ?: "Unknown Album"
-        binding.releaseValue.text = track.releaseDate?.take(4) ?: "Unknown Year"
-        binding.genreValue.text = track.primaryGenreName ?: "Unknown Genre"
-        binding.countryValue.text = track.country ?: "Unknown Country"
+    private fun observeViewModel() {
+        viewModel.uiState.observe(this) { state ->
+            // Обновляем всю информацию о треке
+            setupTrackInfo(state.trackInfo)
 
-        loadTrackCover(track)
+            // Обновляем состояние плеера
+            binding.buttonPlay.isEnabled = state.isPlayButtonEnabled
+            binding.buttonPlay.setImageResource(
+                if (state.isPlaying) R.drawable.pause else R.drawable.button_play
+            )
+            binding.timePlay.text = state.currentPosition
+
+            // Дополнительные действия по состояниям
+            when (state.playbackState) {
+                PlaybackState.PREPARING -> {
+
+                }
+                PlaybackState.PREPARED -> {
+                    // Плеер готов к воспроизведению
+                }
+                PlaybackState.PLAYING -> {
+                    // Идет воспроизведение
+                }
+                PlaybackState.PAUSED -> {
+                    // пауза
+                }
+            }
+        }
     }
 
-    private fun loadTrackCover(track: Track) {
-        val artworkUrl = track.getCoverArtwork().takeIf { it.isNotBlank() } ?: run {
+    private fun setupTrackInfo(trackInfo: TrackInfoState) {
+        binding.trackName.text = trackInfo.trackName
+        binding.artistName.text = trackInfo.artistName
+        binding.durationValue.text = trackInfo.trackTime
+        binding.albumValue.text = trackInfo.album
+        binding.releaseValue.text = trackInfo.releaseYear
+        binding.genreValue.text = trackInfo.genre
+        binding.countryValue.text = trackInfo.country
+
+        loadTrackCover(trackInfo.artworkUrl)
+    }
+
+    private fun loadTrackCover(artworkUrl: String) {
+        if (artworkUrl.isBlank()) {
             binding.imageCover.setImageResource(R.drawable.placeholder)
             return
         }
@@ -92,33 +116,11 @@ class AudioPlayerActivity : AppCompatActivity() {
             .into(binding.imageCover)
     }
 
-    private fun observeViewModel() {
-        viewModel.playerState.observe(this) { state ->
-            // Обновляем UI на основе состояния плеера
-            binding.buttonPlay.isEnabled = state.isPlayButtonEnabled
-
-            // Устанавливаем правильную иконку в зависимости от состояния воспроизведения
-            val playButtonResId = if (state.isPlaying) {
-                R.drawable.pause
-            } else {
-                R.drawable.button_play
-            }
-            binding.buttonPlay.setImageResource(playButtonResId)
-        }
-
-        viewModel.currentPosition.observe(this) { position ->
-            binding.timePlay.text = position
-        }
-    }
-
     override fun onPause() {
         super.onPause()
-        // ViewModel сама управляет состоянием плеера
-        viewModel.playbackControl() // Пауза при сворачивании приложения
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        // ViewModel сама освобождает ресурсы в onCleared()
+        val currentState = viewModel.uiState.value?.playbackState
+        if (currentState == PlaybackState.PLAYING) {
+            viewModel.playbackControl()
+        }
     }
 }

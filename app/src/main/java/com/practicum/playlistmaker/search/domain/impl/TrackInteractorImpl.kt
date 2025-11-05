@@ -7,6 +7,7 @@ import com.practicum.playlistmaker.search.domain.api.TrackInteractor
 import com.practicum.playlistmaker.search.domain.models.Track
 import com.practicum.playlistmaker.search.domain.repository.SearchHistoryRepository
 import com.practicum.playlistmaker.search.domain.repository.TrackRepository
+import com.practicum.playlistmaker.search.ui.SearchState
 import java.io.IOException
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledFuture
@@ -17,12 +18,16 @@ class TrackInteractorImpl(
     private val searchHistoryRepository: SearchHistoryRepository
 ) : TrackInteractor {
 
-    private val _searchState = MutableLiveData<TrackInteractor.SearchState>()
-    override fun getSearchState(): LiveData<TrackInteractor.SearchState> = _searchState
+    companion object {
+        private const val MAX_HISTORY_SIZE = 10
+        private const val SEARCH_DEBOUNCE_DELAY = 2000L
+    }
+
+    private val _searchState = MutableLiveData<SearchState>()
+    override fun getSearchState(): LiveData<SearchState> = _searchState
 
     private val executor = Executors.newScheduledThreadPool(2)
     private var searchFuture: ScheduledFuture<*>? = null
-    private val searchDebounceDelay = 2000L
 
     override fun searchDebounced(query: String) {
         searchFuture?.cancel(false)
@@ -34,24 +39,24 @@ class TrackInteractorImpl(
 
         searchFuture = executor.schedule({
             performSearch(query)
-        }, searchDebounceDelay, TimeUnit.MILLISECONDS)
+        }, SEARCH_DEBOUNCE_DELAY, TimeUnit.MILLISECONDS)
     }
 
     private fun performSearch(query: String) {
-        _searchState.postValue(TrackInteractor.SearchState.Loading)
+        _searchState.postValue(SearchState.Loading)
 
         executor.execute {
             try {
                 val tracks = trackRepository.search(query)
                 if (tracks.isEmpty()) {
-                    _searchState.postValue(TrackInteractor.SearchState.Empty)
+                    _searchState.postValue(SearchState.Error(ErrorType.EMPTY_RESULT))
                 } else {
-                    _searchState.postValue(TrackInteractor.SearchState.Content(tracks))
+                    _searchState.postValue(SearchState.Content(tracks))
                 }
             } catch (e: IOException) {
-                _searchState.postValue(TrackInteractor.SearchState.Error(ErrorType.NETWORK_ERROR))
+                _searchState.postValue(SearchState.Error(ErrorType.NETWORK_ERROR))
             } catch (e: Exception) {
-                _searchState.postValue(TrackInteractor.SearchState.Error(ErrorType.NETWORK_ERROR))
+                _searchState.postValue(SearchState.Error(ErrorType.NETWORK_ERROR))
             }
         }
     }
@@ -60,20 +65,35 @@ class TrackInteractorImpl(
         try {
             val history = searchHistoryRepository.getHistory()
             if (history.isEmpty()) {
-                _searchState.postValue(TrackInteractor.SearchState.EmptyHistory)
+                _searchState.postValue(SearchState.EmptyHistory)
             } else {
-                _searchState.postValue(TrackInteractor.SearchState.History(history))
+                _searchState.postValue(SearchState.History(history))
             }
         } catch (e: Exception) {
-            _searchState.postValue(TrackInteractor.SearchState.EmptyHistory)
+            _searchState.postValue(SearchState.EmptyHistory)
         }
     }
 
     override fun addTrackToHistory(track: Track) {
         try {
-            searchHistoryRepository.addTrack(track)
+            val currentHistory = searchHistoryRepository.getHistory().toMutableList()
+
+            // Удаляем трек если уже есть в истории (для избежания дубликатов)
+            currentHistory.removeAll { it.trackId == track.trackId }
+
+            // Добавляем в начало
+            currentHistory.add(0, track)
+
+            // Обрезаем до максимального размера
+            if (currentHistory.size > MAX_HISTORY_SIZE) {
+                currentHistory.subList(MAX_HISTORY_SIZE, currentHistory.size).clear()
+            }
+
+            // Сохраняем обновленную историю
+            searchHistoryRepository.saveHistory(currentHistory)
         } catch (e: Exception) {
-            // Ignore errors when adding to history
+            // Логируем ошибку, но не прерываем выполнение
+            e.printStackTrace()
         }
     }
 
@@ -82,7 +102,8 @@ class TrackInteractorImpl(
             searchHistoryRepository.clearHistory()
             showHistory()
         } catch (e: Exception) {
-            // Ignore errors when clearing history
+            // Логируем ошибку очистки
+            e.printStackTrace()
         }
     }
 
@@ -91,7 +112,7 @@ class TrackInteractorImpl(
         showHistory()
     }
 
-    fun onCleared() {
+    fun destroy() {
         searchFuture?.cancel(true)
         executor.shutdown()
     }
