@@ -34,6 +34,10 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
+    buildFeatures {
+        viewBinding = true
+    }
+
 }
 
 dependencies {
@@ -55,5 +59,12 @@ dependencies {
     implementation ("androidx.constraintlayout:constraintlayout:2.2.0-beta01")// подключаем последнее обнавление constraintlayout
     // To use constraintlayout in compose
     implementation ("androidx.constraintlayout:constraintlayout-compose:1.1.0-beta01")// компонент для constraintlayout
+
+    // Lifecycle (для ViewModel и LiveData)
+    implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
+    implementation ("androidx.lifecycle:lifecycle-livedata-ktx:2.7.0")
+    implementation ("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
+    implementation ("androidx.activity:activity-ktx:1.8.1")
+    implementation ("androidx.fragment:fragment-ktx:1.6.2")
 
 }
